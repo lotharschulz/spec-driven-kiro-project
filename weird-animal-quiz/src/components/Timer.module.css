@@ -1,0 +1,223 @@
+/**
+ * Timer Component Styles
+ * Mobile-first responsive design with nature-inspired colors
+ */
+
+.timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.timerContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timerSvg {
+  width: 100px;
+  height: 100px;
+  transform: rotate(-90deg);
+}
+
+.timerBackground {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 4;
+}
+
+.timerProgress {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;
+}
+
+.progressNormal {
+  stroke: #4a7c59; /* Forest green */
+}
+
+.progressWarning {
+  stroke: #fb923c; /* Sunset orange */
+}
+
+.progressDanger {
+  stroke: #ef4444; /* Red */
+}
+
+.timerText {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
+}
+
+.timeValue {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #1f2937;
+}
+
+.timeLabel {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Warning states */
+.normal {
+  /* Default state - no additional styling needed */
+  color: inherit;
+}
+
+.warning {
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+.danger {
+  animation: shake 0.5s ease-in-out infinite;
+}
+
+.warningMessage {
+  font-size: 0.875rem;
+  color: #fb923c;
+  font-weight: 500;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.dangerMessage {
+  font-size: 0.875rem;
+  color: #ef4444;
+  font-weight: 600;
+  text-align: center;
+  animation: blink 0.5s ease-in-out infinite alternate;
+}
+
+.pausedIndicator {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+  text-align: center;
+  background: #f3f4f6;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Animations */
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes blink {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.5;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .timer {
+    padding: 0.75rem;
+  }
+  
+  .timerSvg {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .timeValue {
+    font-size: 1.25rem;
+  }
+  
+  .timeLabel {
+    font-size: 0.625rem;
+  }
+  
+  .warningMessage,
+  .dangerMessage,
+  .pausedIndicator {
+    font-size: 0.75rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .timerBackground {
+    stroke: #000000;
+  }
+  
+  .progressNormal {
+    stroke: #006400;
+  }
+  
+  .progressWarning {
+    stroke: #ff8c00;
+  }
+  
+  .progressDanger {
+    stroke: #dc143c;
+  }
+  
+  .timeValue {
+    color: #000000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .timer,
+  .timerProgress,
+  .warningMessage,
+  .dangerMessage,
+  .pausedIndicator {
+    animation: none;
+    transition: none;
+  }
+  
+  .warning,
+  .danger {
+    animation: none;
+  }
+}

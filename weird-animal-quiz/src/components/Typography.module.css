@@ -1,0 +1,267 @@
+/**
+ * Typography Component Styles
+ * WCAG 2.1 AA compliant contrast ratios with mobile-first design
+ */
+
+.typography {
+  margin: 0;
+  font-family: var(--font-family-sans);
+  line-height: var(--line-height-normal);
+  color: var(--color-gray-800);
+}
+
+/* Typography Variants */
+.h1 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.025em;
+}
+
+.h2 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.025em;
+}
+
+.h3 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.h4 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.h5 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+}
+
+.h6 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.body1 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+}
+
+.body2 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+.caption {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+.overline {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Color Variants - WCAG 2.1 AA Compliant */
+.color-primary {
+  color: var(--color-forest-medium);
+}
+
+.color-secondary {
+  color: var(--color-ocean-medium);
+}
+
+.color-success {
+  color: var(--color-success);
+}
+
+.color-warning {
+  color: var(--color-warning);
+}
+
+.color-error {
+  color: var(--color-error);
+}
+
+.color-forest-dark {
+  color: var(--color-forest-dark);
+}
+
+.color-forest-medium {
+  color: var(--color-forest-medium);
+}
+
+.color-ocean-dark {
+  color: var(--color-ocean-dark);
+}
+
+.color-ocean-medium {
+  color: var(--color-ocean-medium);
+}
+
+.color-sunset-dark {
+  color: var(--color-sunset-dark);
+}
+
+.color-sunset-medium {
+  color: var(--color-sunset-medium);
+}
+
+.color-gray-500 {
+  color: var(--color-gray-500);
+}
+
+.color-gray-600 {
+  color: var(--color-gray-600);
+}
+
+.color-gray-700 {
+  color: var(--color-gray-700);
+}
+
+.color-gray-800 {
+  color: var(--color-gray-800);
+}
+
+.color-gray-900 {
+  color: var(--color-gray-900);
+}
+
+/* Text Alignment */
+.align-left {
+  text-align: left;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.align-justify {
+  text-align: justify;
+}
+
+/* Utility Classes */
+.gutterBottom {
+  margin-bottom: 0.5em;
+}
+
+.noWrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Responsive Typography */
+@media (max-width: 480px) {
+  .h1 {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .h2 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .h3 {
+    font-size: var(--font-size-xl);
+  }
+  
+  .h4 {
+    font-size: var(--font-size-lg);
+  }
+  
+  /* Ensure minimum 16px font size on mobile */
+  .body1,
+  .body2 {
+    font-size: var(--font-size-base);
+  }
+  
+  .caption {
+    font-size: var(--font-size-sm);
+  }
+  
+  .overline {
+    font-size: var(--font-size-sm);
+  }
+}
+
+@media (min-width: 768px) {
+  .h1 {
+    font-size: var(--font-size-5xl);
+  }
+  
+  .h2 {
+    font-size: var(--font-size-4xl);
+  }
+  
+  .gutterBottom {
+    margin-bottom: 0.75em;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .color-primary,
+  .color-forest-dark,
+  .color-forest-medium {
+    color: #006400;
+  }
+  
+  .color-secondary,
+  .color-ocean-dark,
+  .color-ocean-medium {
+    color: #0000ff;
+  }
+  
+  .color-warning,
+  .color-sunset-dark,
+  .color-sunset-medium {
+    color: #ff8c00;
+  }
+  
+  .color-error {
+    color: #dc143c;
+  }
+  
+  .color-gray-500,
+  .color-gray-600,
+  .color-gray-700,
+  .color-gray-800,
+  .color-gray-900 {
+    color: #000000;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .typography {
+    color: #000000 !important;
+  }
+  
+  .h1, .h2, .h3, .h4, .h5, .h6 {
+    page-break-after: avoid;
+  }
+  
+  .body1, .body2 {
+    orphans: 3;
+    widows: 3;
+  }
+}

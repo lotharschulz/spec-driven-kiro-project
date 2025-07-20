@@ -1,0 +1,86 @@
+/**
+ * Error Recovery Component Styles
+ * Provides styling for error recovery and auto-retry functionality
+ */
+
+.autoRetryContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, var(--color-forest-light) 0%, var(--color-ocean-light) 100%);
+}
+
+.autoRetryContent {
+  background: var(--color-background);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--color-forest-primary);
+}
+
+.autoRetryContent h3 {
+  color: var(--color-forest-dark);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-lg);
+}
+
+.autoRetryContent p {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto var(--spacing-md);
+  border: 4px solid var(--color-forest-light);
+  border-top: 4px solid var(--color-forest-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .autoRetryContainer {
+    padding: var(--spacing-sm);
+  }
+  
+  .autoRetryContent {
+    padding: var(--spacing-lg);
+  }
+  
+  .spinner {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    border: 4px solid var(--color-forest-primary);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .autoRetryContent {
+    border-width: 3px;
+    box-shadow: none;
+  }
+  
+  .spinner {
+    border-width: 6px;
+  }
+}

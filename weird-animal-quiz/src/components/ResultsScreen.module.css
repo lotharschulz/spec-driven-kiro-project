@@ -1,0 +1,406 @@
+/**
+ * Results Screen Styles
+ * Mobile-first responsive design with nature-inspired aesthetics
+ * Requirements: 3.6, 3.7, 5.6, 4.1, 4.2, 4.3, 4.4
+ */
+
+.container {
+  min-height: 100vh;
+  padding: var(--spacing-4);
+  background: linear-gradient(135deg, var(--color-forest-pale) 0%, var(--color-ocean-pale) 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--color-forest-pale) 0%, var(--color-ocean-pale) 100%);
+}
+
+/* Celebration Animation */
+.celebration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  z-index: var(--z-index-modal);
+  backdrop-filter: blur(8px);
+}
+
+.celebrationEmojis {
+  font-size: var(--font-size-5xl);
+  margin-bottom: var(--spacing-4);
+  animation: bounce 1s ease-in-out infinite alternate;
+}
+
+.celebrationText {
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes bounce {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-10px);
+  }
+}
+
+/* Header Section */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-6);
+  text-align: center;
+}
+
+.scoreCircle {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-forest-medium), var(--color-ocean-medium));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-xl);
+  margin-bottom: var(--spacing-4);
+}
+
+.scoreCircle::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+}
+
+.scoreValue {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.performanceFeedback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.feedbackEmoji {
+  font-size: var(--font-size-4xl);
+  margin-bottom: var(--spacing-2);
+}
+
+/* Score Breakdown */
+.breakdown {
+  width: 100%;
+}
+
+.difficultyBreakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.difficultyItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.difficultyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.difficultyLabel {
+  font-weight: var(--font-weight-semibold);
+}
+
+.progressBar {
+  height: 12px;
+  background-color: var(--color-gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+}
+
+.progressFill.progress-easy {
+  background: linear-gradient(90deg, var(--color-forest-light), var(--color-forest-medium));
+}
+
+.progressFill.progress-medium {
+  background: linear-gradient(90deg, var(--color-sunset-light), var(--color-sunset-medium));
+}
+
+.progressFill.progress-hard {
+  background: linear-gradient(90deg, var(--color-ocean-light), var(--color-ocean-medium));
+}
+
+.percentage {
+  text-align: right;
+  font-weight: var(--font-weight-medium);
+}
+
+/* Statistics Grid */
+.statistics {
+  width: 100%;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-4);
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2);
+  transition: transform var(--transition-base);
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+}
+
+/* Performance Analysis */
+.analysis {
+  width: 100%;
+}
+
+.analysisSection {
+  margin-bottom: var(--spacing-6);
+}
+
+.analysisSection:last-child {
+  margin-bottom: 0;
+}
+
+.analysisList {
+  list-style: none;
+  padding: 0;
+  margin: var(--spacing-3) 0 0 0;
+}
+
+.analysisList li {
+  padding: var(--spacing-2) 0;
+  border-bottom: 1px solid var(--color-gray-200);
+  position: relative;
+  padding-left: var(--spacing-6);
+}
+
+.analysisList li:last-child {
+  border-bottom: none;
+}
+
+.analysisList li::before {
+  content: '•';
+  position: absolute;
+  left: var(--spacing-2);
+  color: var(--color-forest-medium);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Action Buttons */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  width: 100%;
+  margin-top: var(--spacing-4);
+}
+
+.primaryActions {
+  display: flex;
+  justify-content: center;
+}
+
+.retryActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  align-items: center;
+}
+
+.retryButtons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  width: 100%;
+  max-width: 300px;
+}
+
+.retryButton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.retryScore {
+  font-size: var(--font-size-sm);
+  opacity: 0.8;
+  font-weight: var(--font-weight-normal);
+}
+
+/* Tablet Styles */
+@media (min-width: 768px) {
+  .container {
+    padding: var(--spacing-8);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .header {
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .scoreCircle {
+    width: 240px;
+    height: 240px;
+    margin-bottom: 0;
+  }
+
+  .performanceFeedback {
+    align-items: flex-start;
+    text-align: left;
+    flex: 1;
+    margin-left: var(--spacing-8);
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-6);
+  }
+
+  .retryButtons {
+    flex-direction: row;
+    max-width: none;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .retryButton {
+    width: auto;
+    min-width: 180px;
+  }
+}
+
+/* Desktop Styles */
+@media (min-width: 1024px) {
+  .container {
+    padding: var(--spacing-12);
+    max-width: 1000px;
+  }
+
+  .scoreCircle {
+    width: 280px;
+    height: 280px;
+  }
+
+  .breakdown,
+  .statistics,
+  .analysis {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .difficultyBreakdown {
+    gap: var(--spacing-6);
+  }
+
+  .statsGrid {
+    gap: var(--spacing-8);
+  }
+
+  .actions {
+    max-width: 600px;
+    margin: var(--spacing-8) auto 0;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .scoreCircle {
+    background: var(--color-black);
+    border: 3px solid var(--color-white);
+  }
+
+  .progressFill.progress-easy,
+  .progressFill.progress-medium,
+  .progressFill.progress-hard {
+    background: var(--color-black);
+  }
+
+  .statCard {
+    border: 2px solid var(--color-gray-800);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .celebrationEmojis {
+    animation: none;
+  }
+
+  .statCard:hover {
+    transform: none;
+  }
+
+  .progressFill {
+    transition: none;
+  }
+}
+
+/* Focus Styles for Accessibility */
+.retryButton:focus-visible {
+  outline: 2px solid var(--color-ocean-medium);
+  outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+  .celebration {
+    display: none;
+  }
+
+  .container {
+    background: white;
+    padding: var(--spacing-4);
+  }
+
+  .actions {
+    display: none;
+  }
+}
