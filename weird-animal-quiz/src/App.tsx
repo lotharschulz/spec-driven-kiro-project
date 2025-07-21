@@ -6,6 +6,7 @@ import { useMobileOptimization } from './hooks/useMobileOptimization';
 import { Difficulty } from './types/quiz';
 // LoadingSpinner imported via components index
 import SkeletonScreen from './components/SkeletonScreen';
+import PageTransition from './components/PageTransition';
 import { 
   PerformanceMonitor, 
   ResourceOptimizer, 
@@ -18,6 +19,7 @@ import {
   TouchTargetValidator, 
   FocusManager 
 } from './utils/accessibility';
+import { injectAnimationKeyframes } from './utils/animationSystem';
 import './App.css';
 
 // Create lazy loaders with preloading capability
@@ -109,6 +111,9 @@ function App() {
     // Load and apply accessibility preferences
     const preferences = VisualAccessibility.loadPreferences();
     VisualAccessibility.applyPreferences(preferences);
+
+    // Inject animation keyframes
+    injectAnimationKeyframes();
 
     // Check for saved progress
     const hasProgress = storage.loadProgress();
@@ -265,18 +270,20 @@ function App() {
                   gameState === 'results' ? 'results' : 'question'} 
           />
         }>
-          {gameState === 'welcome' && (
-            <WelcomeScreen onStartQuiz={handleStartQuiz} />
-          )}
-          {gameState === 'quiz' && (
-            <div>Quiz Component Coming Soon...</div>
-          )}
-          {gameState === 'results' && (
-            <ResultsScreen 
-              onPlayAgain={handlePlayAgain}
-              onRetryDifficulty={handleRetryDifficulty}
-            />
-          )}
+          <PageTransition pageKey={gameState} direction="up">
+            {gameState === 'welcome' && (
+              <WelcomeScreen onStartQuiz={handleStartQuiz} />
+            )}
+            {gameState === 'quiz' && (
+              <div>Quiz Component Coming Soon...</div>
+            )}
+            {gameState === 'results' && (
+              <ResultsScreen 
+                onPlayAgain={handlePlayAgain}
+                onRetryDifficulty={handleRetryDifficulty}
+              />
+            )}
+          </PageTransition>
         </Suspense>
       </main>
 

@@ -5,7 +5,9 @@
  */
 
 import React, { forwardRef, useEffect, useRef, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { HapticFeedback, MobileLayoutOptimizer, MobileDetector } from '../utils/mobileUtils';
+import { useReducedMotion, ANIMATION_VARIANTS } from '../utils/animationSystem';
 import styles from './Button.module.css';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'ghost';
@@ -104,8 +106,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ? `${ariaLabel || children} - Loading, please wait`
       : ariaLabel;
 
+    // Check for reduced motion preference
+    const prefersReducedMotion = useReducedMotion();
+    
+    // Use motion button with micro-interactions if animations are enabled
+    const MotionButton = motion.button;
+    
     return (
-      <button
+      <MotionButton
         ref={buttonRef}
         type={type}
         className={buttonClasses}
@@ -115,15 +123,25 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         aria-describedby={ariaDescribedBy}
         aria-checked={ariaChecked}
         onClick={handleClick}
+        // Add micro-interactions with Framer Motion
+        whileHover={!prefersReducedMotion && !disabled && !loading ? { scale: 1.05 } : {}}
+        whileTap={!prefersReducedMotion && !disabled && !loading ? { scale: 0.95 } : {}}
+        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         {...props}
       >
         {loading && (
           <span className={styles.spinner} aria-hidden="true">
-            <svg
+            <motion.svg
               className={styles.spinnerIcon}
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 1,
+                repeat: Infinity,
+                ease: "linear"
+              }}
             >
               <circle
                 cx="12"
@@ -135,14 +153,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 strokeDasharray="31.416"
                 strokeDashoffset="31.416"
               />
-            </svg>
+            </motion.svg>
           </span>
         )}
         
         {leftIcon && !loading && (
-          <span className={styles.leftIcon} aria-hidden="true">
+          <motion.span 
+            className={styles.leftIcon} 
+            aria-hidden="true"
+            initial={{ x: -5, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.2 }}
+          >
             {leftIcon}
-          </span>
+          </motion.span>
         )}
         
         <span className={styles.content}>
@@ -150,11 +174,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         </span>
         
         {rightIcon && !loading && (
-          <span className={styles.rightIcon} aria-hidden="true">
+          <motion.span 
+            className={styles.rightIcon} 
+            aria-hidden="true"
+            initial={{ x: 5, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.2 }}
+          >
             {rightIcon}
-          </span>
+          </motion.span>
         )}
-      </button>
+      </MotionButton>
     );
   }
 );

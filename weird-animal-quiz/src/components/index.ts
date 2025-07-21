@@ -18,6 +18,10 @@ export type {
   TypographyAlign 
 } from './Typography';
 
+// Animation Components
+export { default as PageTransition } from './PageTransition';
+export type { PageTransitionProps } from './PageTransition';
+
 // Existing Components
 export { default as Timer } from './Timer';
 export type { TimerProps } from './Timer';
