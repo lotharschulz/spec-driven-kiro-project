@@ -37,6 +37,7 @@ export const useMobileOptimization = (
   const [deviceInfo, setDeviceInfo] = useState(() => MobileDetector.getDeviceInfo());
   const [currentBreakpoint, setCurrentBreakpoint] = useState(() => ResponsiveBreakpoints.getCurrentBreakpoint());
   const swipeHandlerRef = useRef<SwipeGestureHandler | null>(null);
+  const [orientation, setOrientation] = useState(deviceInfo.orientation);
 
   const {
     enableTouchFeedback = true,
@@ -65,6 +66,8 @@ export const useMobileOptimization = (
     if (optimizePerformance) {
       MobilePerformanceOptimizer.optimizeScrolling(element);
       MobilePerformanceOptimizer.enableHardwareAcceleration(element);
+      MobilePerformanceOptimizer.optimizeImages(element);
+      MobilePerformanceOptimizer.optimizeTouchResponsiveness(element);
       
       if (deviceInfo.isMobile) {
         MobilePerformanceOptimizer.preventZoom(element);
@@ -81,6 +84,19 @@ export const useMobileOptimization = (
       swipeHandlerRef.current = new SwipeGestureHandler(element, swipeCallbacks);
     }
 
+    // Apply orientation-specific classes
+    if (orientation === 'portrait') {
+      element.classList.add('orientation-portrait');
+      element.classList.remove('orientation-landscape');
+    } else {
+      element.classList.add('orientation-landscape');
+      element.classList.remove('orientation-portrait');
+    }
+
+    // Apply breakpoint-specific classes
+    element.classList.remove('breakpoint-mobile', 'breakpoint-tablet', 'breakpoint-desktop');
+    element.classList.add(`breakpoint-${currentBreakpoint}`);
+
     return () => {
       // Cleanup swipe handler
       if (swipeHandlerRef.current) {
@@ -95,7 +111,9 @@ export const useMobileOptimization = (
     enableSwipeGestures,
     enableHapticFeedback,
     optimizePerformance,
-    swipeCallbacks
+    swipeCallbacks,
+    orientation,
+    currentBreakpoint
   ]);
 
   // Listen for breakpoint changes
@@ -107,17 +125,38 @@ export const useMobileOptimization = (
     return unsubscribe;
   }, []);
 
-  // Update device info on window resize
+  // Update device info on window resize and orientation change
   useEffect(() => {
     const handleResize = () => {
       // Reset device info cache to get updated values
       (MobileDetector as any).deviceInfo = null;
-      setDeviceInfo(MobileDetector.getDeviceInfo());
+      const newDeviceInfo = MobileDetector.getDeviceInfo();
+      setDeviceInfo(newDeviceInfo);
+      setOrientation(newDeviceInfo.orientation);
+    };
+
+    const handleOrientationChange = () => {
+      // Reset device info cache to get updated values
+      (MobileDetector as any).deviceInfo = null;
+      const newDeviceInfo = MobileDetector.getDeviceInfo();
+      setDeviceInfo(newDeviceInfo);
+      setOrientation(newDeviceInfo.orientation);
+      
+      // Trigger haptic feedback on orientation change if enabled
+      if (enableHapticFeedback) {
+        HapticFeedback.medium();
+      }
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    window.addEventListener('orientationchange', handleOrientationChange);
+    
+    // Some browsers don't support orientationchange, so we also listen for resize
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    };
+  }, [enableHapticFeedback]);
 
   // Haptic feedback utilities
   const triggerHapticFeedback = {
@@ -141,6 +180,50 @@ export const useMobileOptimization = (
   const isTabletBreakpoint = () => currentBreakpoint === 'tablet';
   const isDesktopBreakpoint = () => currentBreakpoint === 'desktop';
 
+  // Detect if device is in landscape mode
+  const isLandscape = deviceInfo.orientation === 'landscape';
+  
+  // Detect if device has notch (iPhone X and newer)
+  const hasNotch = deviceInfo.isMobile && window.innerWidth >= 375 && window.innerHeight >= 812;
+  
+  // Get safe area insets
+  const getSafeAreaInsets = () => {
+    // Try to get CSS environment variables for safe areas
+    const computedStyle = getComputedStyle(document.documentElement);
+    
+    return {
+      top: parseInt(computedStyle.getPropertyValue('env(safe-area-inset-top)') || '0'),
+      right: parseInt(computedStyle.getPropertyValue('env(safe-area-inset-right)') || '0'),
+      bottom: parseInt(computedStyle.getPropertyValue('env(safe-area-inset-bottom)') || '0'),
+      left: parseInt(computedStyle.getPropertyValue('env(safe-area-inset-left)') || '0')
+    };
+  };
+  
+  // Apply thumb-friendly positioning to an element
+  const applyThumbFriendlyPosition = (element: HTMLElement) => {
+    if (!deviceInfo.isMobile) return;
+    
+    const thumbZone = getThumbZone();
+    const rect = element.getBoundingClientRect();
+    
+    // Check if element is in a hard-to-reach zone
+    if (rect.top < 150 && rect.right > window.innerWidth - 60) {
+      // Move to thumb-reachable zone
+      element.classList.add('thumb-nav-primary');
+    }
+  };
+  
+  // Get optimal touch target size based on device
+  const getOptimalTouchSize = () => {
+    if (deviceInfo.isMobile && deviceInfo.screenSize === 'small') {
+      return 48; // Slightly larger for small screens
+    } else if (deviceInfo.isMobile || deviceInfo.isTablet) {
+      return 44; // Standard minimum size
+    } else {
+      return 32; // Smaller for desktop with mouse
+    }
+  };
+
   return {
     // Ref to attach to the element
     ref: elementRef,
@@ -148,6 +231,9 @@ export const useMobileOptimization = (
     // Device information
     deviceInfo,
     currentBreakpoint,
+    orientation,
+    isLandscape,
+    hasNotch,
     
     // Device type checks
     isTouchDevice,
@@ -163,6 +249,9 @@ export const useMobileOptimization = (
     // Utilities
     triggerHapticFeedback,
     getThumbZone,
+    getSafeAreaInsets,
+    applyThumbFriendlyPosition,
+    getOptimalTouchSize,
     
     // CSS classes for conditional styling
     mobileClasses: {
@@ -170,12 +259,16 @@ export const useMobileOptimization = (
       'is-tablet': deviceInfo.isTablet,
       'is-desktop': deviceInfo.isDesktop,
       'has-touch': deviceInfo.hasTouch,
+      'has-notch': hasNotch,
       'thumb-optimized': enableThumbNavigation && deviceInfo.isMobile,
       'touch-feedback': enableTouchFeedback && deviceInfo.hasTouch,
       'swipe-enabled': enableSwipeGestures && deviceInfo.hasTouch,
       [`breakpoint-${currentBreakpoint}`]: true,
       [`screen-${deviceInfo.screenSize}`]: true,
       [`orientation-${deviceInfo.orientation}`]: true,
+      'safe-area-support': typeof CSS !== 'undefined' && 'supports' in CSS ? CSS.supports('padding: env(safe-area-inset-top)') : false,
+      'reduced-motion': typeof window !== 'undefined' && 'matchMedia' in window ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false,
+      'high-contrast': typeof window !== 'undefined' && 'matchMedia' in window ? window.matchMedia('(prefers-contrast: high)').matches : false,
     }
   };
 };

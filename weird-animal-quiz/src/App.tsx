@@ -2,6 +2,7 @@ import { useState, useEffect, Suspense, lazy } from 'react';
 import { QuizProvider } from './contexts/QuizContext';
 import { ErrorBoundary, AccessibilitySettings, Button } from './components';
 import { useQuizStorage } from './hooks/useQuizStorage';
+import { useMobileOptimization } from './hooks/useMobileOptimization';
 import { Difficulty } from './types/quiz';
 // LoadingSpinner imported via components index
 import SkeletonScreen from './components/SkeletonScreen';
@@ -48,6 +49,19 @@ function App() {
   const [showAccessibilitySettings, setShowAccessibilitySettings] = useState(false);
   const storage = useQuizStorage();
   const offlineState = useOfflineManager();
+  
+  // Add mobile optimization hook
+  const { 
+    ref: mobileRef,
+    deviceInfo,
+    currentBreakpoint,
+    mobileClasses,
+    triggerHapticFeedback
+  } = useMobileOptimization({
+    enableThumbNavigation: true,
+    enableTouchFeedback: true,
+    optimizePerformance: true
+  });
 
   // Performance monitoring and preloading
   useEffect(() => {
@@ -147,26 +161,47 @@ function App() {
     );
   }
 
+  // Create class names string from mobile classes
+  const mobileClassNames = Object.keys(mobileClasses)
+    .filter(key => mobileClasses[key])
+    .join(' ');
+
+  // Handle button click with haptic feedback
+  const handleAccessibilityClick = () => {
+    triggerHapticFeedback.selection();
+    setShowAccessibilitySettings(true);
+  };
+
   return (
-    <div className="app">
+    <div 
+      ref={mobileRef} 
+      className={`app ${mobileClassNames}`}
+      data-breakpoint={currentBreakpoint}
+      data-device-type={deviceInfo.isMobile ? 'mobile' : deviceInfo.isTablet ? 'tablet' : 'desktop'}
+    >
       {/* Skip link for keyboard navigation */}
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
 
-      {/* Accessibility Settings Button */}
+      {/* Accessibility Settings Button - positioned for thumb navigation */}
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => setShowAccessibilitySettings(true)}
+        onClick={handleAccessibilityClick}
         aria-label="Open accessibility settings"
+        className={deviceInfo.isMobile ? "secondary-action" : ""}
         style={{
           position: 'fixed',
-          top: '10px',
-          left: '10px',
+          top: deviceInfo.isMobile ? 'auto' : '10px',
+          bottom: deviceInfo.isMobile ? '10px' : 'auto',
+          left: deviceInfo.isMobile ? 'auto' : '10px',
+          right: deviceInfo.isMobile ? '10px' : 'auto',
           zIndex: 999,
           background: 'rgba(255, 255, 255, 0.9)',
-          backdropFilter: 'blur(4px)'
+          backdropFilter: 'blur(4px)',
+          minWidth: '44px',
+          minHeight: '44px'
         }}
       >
         ⚙️ A11y
@@ -189,29 +224,41 @@ function App() {
           Used: {Math.round(storageInfo.percentage)}%<br/>
           Online: {offlineState.isOnline ? 'Yes' : 'No'}<br/>
           SW: {offlineState.isServiceWorkerRegistered ? 'Active' : 'Inactive'}<br/>
-          Cache: {offlineState.cacheStatus}
+          Cache: {offlineState.cacheStatus}<br/>
+          Device: {deviceInfo.isMobile ? 'Mobile' : deviceInfo.isTablet ? 'Tablet' : 'Desktop'}<br/>
+          Breakpoint: {currentBreakpoint}
         </div>
       )}
 
       {/* Offline indicator */}
       {!offlineState.isOnline && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          background: '#f59e0b',
-          color: 'white',
-          padding: '8px',
-          textAlign: 'center',
-          fontSize: '14px',
-          zIndex: 999
-        }}>
+        <div 
+          className="safe-area-inset-top"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            background: '#f59e0b',
+            color: 'white',
+            padding: '8px',
+            textAlign: 'center',
+            fontSize: '14px',
+            zIndex: 999
+          }}
+        >
           You're offline. Some features may be limited.
         </div>
       )}
 
-      <main id="main-content">
+      <main 
+        id="main-content" 
+        className={`
+          ${deviceInfo.isMobile ? 'mobile-container' : 
+            deviceInfo.isTablet ? 'tablet-container' : 'desktop-container'}
+          ${currentBreakpoint === 'mobile' ? 'mobile-320' : ''}
+        `}
+      >
         <Suspense fallback={
           <SkeletonScreen 
             type={gameState === 'welcome' ? 'welcome' : 
@@ -236,7 +283,10 @@ function App() {
       {/* Accessibility Settings Modal */}
       <AccessibilitySettings
         isOpen={showAccessibilitySettings}
-        onClose={() => setShowAccessibilitySettings(false)}
+        onClose={() => {
+          triggerHapticFeedback.selection();
+          setShowAccessibilitySettings(false);
+        }}
       />
     </div>
   );

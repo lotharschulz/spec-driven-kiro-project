@@ -34,15 +34,21 @@ export interface QuestionCardProps {
   showFeedback?: boolean;
   selectedAnswerId?: string;
   isCorrect?: boolean;
+  timeRemaining?: number;
+  hintAvailable?: boolean;
+  difficulty?: string;
 }
 
-export const QuestionCard: React.FC<QuestionCardProps> = ({
+const QuestionCard: React.FC<QuestionCardProps> = ({
   question,
   onAnswer,
   onHintUsed,
   showFeedback = false,
   selectedAnswerId,
-  isCorrect
+  isCorrect,
+  timeRemaining = 30,
+  hintAvailable = true,
+  difficulty = 'easy'
 }) => {
   const { state, isHintAvailable, getTimeWarningLevel, nextQuestion } = useQuiz();
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -56,7 +62,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const answerRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const hintAvailable = isHintAvailable(question.id);
+  const isHintAvailableForQuestion = isHintAvailable(question.id);
   const timeWarningLevel = getTimeWarningLevel();
   
   // Get the last user answer for this question
@@ -96,7 +102,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
   // Handle hint usage with haptic feedback
   const handleHintClick = async () => {
-    if (!hintAvailable || currentHint) return;
+    if (!isHintAvailableForQuestion || currentHint) return;
     
     // Trigger haptic feedback for hint usage
     if (MobileDetector.isTouchDevice()) {
@@ -276,189 +282,190 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       tabIndex={-1}
     >
       <div ref={questionRef} tabIndex={-1}>
-      {/* Progress Tracker */}
-      <div className={styles.progressSection} role="banner">
-        <ProgressTracker showDifficulty={true} />
-      </div>
-
-      {/* Timer Section */}
-      <div 
-        className={`${styles.timerSection} ${styles[timeWarningLevel]}`}
-        role="timer"
-        aria-live="polite"
-        aria-label={AriaLabels.timer(state.timeRemaining || 30, timeWarningLevel)}
-      >
-        <Timer duration={30} />
-      </div>
-
-      {/* Question Header */}
-      <header className={styles.questionHeader}>
-        <div className={styles.difficultyBadge}>
-          <div 
-            className={styles.difficultyIndicator}
-            style={{ backgroundColor: getDifficultyColor(question.difficulty) }}
-            role="status"
-            aria-label={`Difficulty level: ${getDifficultyLabel(question.difficulty)}`}
-          >
-            {getDifficultyLabel(question.difficulty)}
-          </div>
+        {/* Progress Tracker */}
+        <div className={styles.progressSection} role="banner">
+          <ProgressTracker showDifficulty={true} />
         </div>
-        
-        <div className={styles.emojis} role="presentation" aria-hidden="true">
-          {question.emojis.map((emoji, index) => (
-            <span key={index} className={styles.emoji} role="img" aria-hidden="true">
-              {emoji}
-            </span>
-          ))}
-        </div>
-      </header>
 
-      {/* Question Text */}
-      <section className={styles.questionContent}>
-        <h1 
-          className={styles.questionText}
-          id="current-question"
-          tabIndex={-1}
-        >
-          {question.text}
-        </h1>
-      </section>
-
-      {/* Answer Options */}
-      <section 
-        className={styles.answersSection}
-        role="group"
-        aria-labelledby="answers-heading"
-      >
-        <h2 id="answers-heading" className="sr-only">
-          Answer Options - Use arrow keys to navigate, Enter or Space to select
-        </h2>
-        
+        {/* Timer Section */}
         <div 
-          className={styles.answersGrid}
-          role="radiogroup"
-          aria-labelledby="current-question"
-          aria-required="true"
-          aria-describedby="answer-instructions"
+          className={`${styles.timerSection} ${styles[timeWarningLevel]}`}
+          role="timer"
+          aria-live="polite"
+          aria-label={AriaLabels.timer(state.timeRemaining || 30, timeWarningLevel)}
         >
-          {question.answers.map((answer, index) => {
-            const isSelected = selectedAnswer === answer.id || selectedAnswerId === answer.id;
-            const variant = getAnswerButtonVariant(answer.id);
-            const isEliminated = eliminatedAnswers.includes(answer.id);
-            const disabled = isAnswerDisabled(answer.id);
-            
-            return (
-              <Button
-                key={answer.id}
-                ref={(el) => (answerRefs.current[index] = el)}
-                variant={variant}
-                size="lg"
-                fullWidth
-                className={`${styles.answerButton} ${isSelected ? styles.selected : ''} ${isEliminated ? styles.eliminated : ''}`}
-                onClick={() => handleAnswerSelect(answer.id, index)}
-                onKeyDown={(e) => handleAnswerKeyDown(e, index)}
-                disabled={disabled}
-                role="radio"
-                aria-checked={isSelected}
-                aria-label={AriaLabels.answerButton(
-                  String.fromCharCode(65 + index),
-                  answer.text,
-                  index,
-                  question.answers.length,
-                  isSelected,
-                  isSelected ? answer.isCorrect : undefined,
-                  isEliminated
-                )}
-                aria-describedby={isEliminated ? `eliminated-${index}` : undefined}
-              >
-                <span className={styles.answerLetter} aria-hidden="true">
-                  {String.fromCharCode(65 + index)}
-                </span>
-                <span className={styles.answerText}>
-                  {answer.text}
-                </span>
-                {isEliminated && (
-                  <>
-                    <span className={styles.eliminatedIcon} aria-hidden="true">
-                      ❌
-                    </span>
-                    <span id={`eliminated-${index}`} className="sr-only">
-                      This option has been eliminated by hint
-                    </span>
-                  </>
-                )}
-                {isSelected && showAnswerFeedback && (
-                  <span className={styles.feedbackIcon} aria-hidden="true">
-                    {question.answers.find(a => a.id === answer.id)?.isCorrect ? '✓' : '✗'}
-                  </span>
-                )}
-              </Button>
-            );
-          })}
+          <Timer duration={30} />
         </div>
-        
-        <div id="answer-instructions" className="sr-only">
-          Use arrow keys to navigate between answers, Enter or Space to select an answer
-        </div>
-      </section>
 
-      {/* Hint Section */}
-      <section className={styles.hintSection} aria-labelledby="hint-heading">
-        <h3 id="hint-heading" className="sr-only">Hint</h3>
-        
-        <Button
-          variant="ghost"
-          size="md"
-          onClick={handleHintClick}
-          disabled={!hintAvailable || showFeedback || showAnswerFeedback || currentHint !== null}
-          className={`${styles.hintButton} ${!hintAvailable || currentHint ? styles.hintUsed : ''}`}
-          leftIcon={<span role="img" aria-label="hint">💡</span>}
-          aria-label={AriaLabels.hintButton(hintAvailable, currentHint !== null)}
-          aria-describedby="hint-status"
-        >
-          {hintAvailable && !currentHint ? 'Use Hint' : 'Hint Used'}
-        </Button>
-        
-        <div id="hint-status" className={styles.hintUsedIndicator} role="status">
-          {(!hintAvailable || currentHint) && (
-            <span>
-              {!hintAvailable ? 'Hint already used for this question' : 'Hint used for this question'}
-            </span>
-          )}
-        </div>
-        
-        {/* Display current hint */}
-        {currentHint && (
-          <div 
-            className={styles.hintDisplay}
-            role="region"
-            aria-labelledby="hint-content"
-            aria-live="polite"
-          >
-            <h4 id="hint-content" className="sr-only">Hint Content</h4>
-            <div className={styles.hintMessage} role="text">
-              {currentHint.message}
+        {/* Question Header */}
+        <header className={styles.questionHeader}>
+          <div className={styles.difficultyBadge}>
+            <div 
+              className={styles.difficultyIndicator}
+              style={{ backgroundColor: getDifficultyColor(question.difficulty) }}
+              role="status"
+              aria-label={`Difficulty level: ${getDifficultyLabel(question.difficulty)}`}
+            >
+              {getDifficultyLabel(question.difficulty)}
             </div>
-            {currentHint.clue && (
-              <div className={styles.hintClue} role="text">
-                {currentHint.clue}
-              </div>
+          </div>
+          
+          <div className={styles.emojis} role="presentation" aria-hidden="true">
+            {question.emojis.map((emoji, index) => (
+              <span key={index} className={styles.emoji} role="img" aria-hidden="true">
+                {emoji}
+              </span>
+            ))}
+          </div>
+        </header>
+
+        {/* Question Text */}
+        <section className={styles.questionContent}>
+          <h1 
+            className={styles.questionText}
+            id="current-question"
+            tabIndex={-1}
+          >
+            {question.text}
+          </h1>
+        </section>
+
+        {/* Answer Options */}
+        <section 
+          className={styles.answersSection}
+          role="group"
+          aria-labelledby="answers-heading"
+        >
+          <h2 id="answers-heading" className="sr-only">
+            Answer Options - Use arrow keys to navigate, Enter or Space to select
+          </h2>
+          
+          <div 
+            className={styles.answersGrid}
+            role="radiogroup"
+            aria-labelledby="current-question"
+            aria-required="true"
+            aria-describedby="answer-instructions"
+          >
+            {question.answers.map((answer, index) => {
+              const isSelected = selectedAnswer === answer.id || selectedAnswerId === answer.id;
+              const variant = getAnswerButtonVariant(answer.id);
+              const isEliminated = eliminatedAnswers.includes(answer.id);
+              const disabled = isAnswerDisabled(answer.id);
+              
+              return (
+                <Button
+                  key={answer.id}
+                  ref={(el) => (answerRefs.current[index] = el)}
+                  variant={variant}
+                  size="lg"
+                  fullWidth
+                  className={`${styles.answerButton} ${isSelected ? styles.selected : ''} ${isEliminated ? styles.eliminated : ''}`}
+                  onClick={() => handleAnswerSelect(answer.id, index)}
+                  onKeyDown={(e) => handleAnswerKeyDown(e, index)}
+                  disabled={disabled}
+                  role="radio"
+                  aria-checked={isSelected}
+                  aria-label={AriaLabels.answerButton(
+                    String.fromCharCode(65 + index),
+                    answer.text,
+                    index,
+                    question.answers.length,
+                    isSelected,
+                    isSelected ? answer.isCorrect : undefined,
+                    isEliminated
+                  )}
+                  aria-describedby={isEliminated ? `eliminated-${index}` : undefined}
+                >
+                  <span className={styles.answerLetter} aria-hidden="true">
+                    {String.fromCharCode(65 + index)}
+                  </span>
+                  <span className={styles.answerText}>
+                    {answer.text}
+                  </span>
+                  {isEliminated && (
+                    <>
+                      <span className={styles.eliminatedIcon} aria-hidden="true">
+                        ❌
+                      </span>
+                      <span id={`eliminated-${index}`} className="sr-only">
+                        This option has been eliminated by hint
+                      </span>
+                    </>
+                  )}
+                  {isSelected && showAnswerFeedback && (
+                    <span className={styles.feedbackIcon} aria-hidden="true">
+                      {question.answers.find(a => a.id === answer.id)?.isCorrect ? '✓' : '✗'}
+                    </span>
+                  )}
+                </Button>
+              );
+            })}
+          </div>
+          
+          <div id="answer-instructions" className="sr-only">
+            Use arrow keys to navigate between answers, Enter or Space to select an answer
+          </div>
+        </section>
+
+        {/* Hint Section */}
+        <section className={styles.hintSection} aria-labelledby="hint-heading">
+          <h3 id="hint-heading" className="sr-only">Hint</h3>
+          
+          <Button
+            variant="ghost"
+            size="md"
+            onClick={handleHintClick}
+            disabled={!isHintAvailableForQuestion || showFeedback || showAnswerFeedback || currentHint !== null}
+            className={`${styles.hintButton} ${!isHintAvailableForQuestion || currentHint ? styles.hintUsed : ''}`}
+            leftIcon={<span role="img" aria-label="hint">💡</span>}
+            aria-label={AriaLabels.hintButton(isHintAvailableForQuestion, currentHint !== null)}
+            aria-describedby="hint-status"
+          >
+            {isHintAvailableForQuestion && !currentHint ? 'Use Hint' : 'Hint Used'}
+          </Button>
+          
+          <div id="hint-status" className={styles.hintUsedIndicator} role="status">
+            {(!isHintAvailableForQuestion || currentHint) && (
+              <span>
+                {!isHintAvailableForQuestion ? 'Hint already used for this question' : 'Hint used for this question'}
+              </span>
             )}
           </div>
-        )}
-      </section>
+          
+          {/* Display current hint */}
+          {currentHint && (
+            <div 
+              className={styles.hintDisplay}
+              role="region"
+              aria-labelledby="hint-content"
+              aria-live="polite"
+            >
+              <h4 id="hint-content" className="sr-only">Hint Content</h4>
+              <div className={styles.hintMessage} role="text">
+                {currentHint.message}
+              </div>
+              {currentHint.clue && (
+                <div className={styles.hintClue} role="text">
+                  {currentHint.clue}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
 
-      {/* Feedback Display */}
-      {state.showingFeedback && lastAnswer && selectedAnswerObj && (
-        <FeedbackDisplay
-          question={question}
-          selectedAnswer={selectedAnswerObj}
-          isCorrect={lastAnswer.isCorrect}
-          onNext={nextQuestion}
-          show={state.showingFeedback}
-          minReadingTime={20}
-        />
-      )}
+        {/* Feedback Display */}
+        {state.showingFeedback && lastAnswer && selectedAnswerObj && (
+          <FeedbackDisplay
+            question={question}
+            selectedAnswer={selectedAnswerObj}
+            isCorrect={lastAnswer.isCorrect}
+            onNext={nextQuestion}
+            show={state.showingFeedback}
+            minReadingTime={20}
+          />
+        )}
+      </div>
     </div>
   );
 };

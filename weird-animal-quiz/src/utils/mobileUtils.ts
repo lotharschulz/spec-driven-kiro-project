@@ -331,26 +331,35 @@ export class SwipeGestureHandler extends TouchGestureHandler {
   }
 
   protected updateTracking(x: number, y: number): void {
-    // Swipe detection logic would go here
     const deltaX = x - this.startX;
     const deltaY = y - this.startY;
     const absDeltaX = Math.abs(deltaX);
     const absDeltaY = Math.abs(deltaY);
-
-    if (absDeltaX > this.threshold || absDeltaY > this.threshold) {
+    const timeDelta = Date.now() - this.startTime;
+    
+    // Only detect swipes that are fast enough (under 300ms)
+    // and have moved beyond the threshold distance
+    if ((absDeltaX > this.threshold || absDeltaY > this.threshold) && timeDelta < 300) {
+      // Provide haptic feedback for swipe detection
+      HapticFeedback.selection();
+      
       if (absDeltaX > absDeltaY) {
         // Horizontal swipe
         if (deltaX > 0 && this.onSwipeRight) {
           this.onSwipeRight();
+          HapticFeedback.medium(); // Stronger feedback for successful gesture
         } else if (deltaX < 0 && this.onSwipeLeft) {
           this.onSwipeLeft();
+          HapticFeedback.medium();
         }
       } else {
         // Vertical swipe
         if (deltaY > 0 && this.onSwipeDown) {
           this.onSwipeDown();
+          HapticFeedback.medium();
         } else if (deltaY < 0 && this.onSwipeUp) {
           this.onSwipeUp();
+          HapticFeedback.medium();
         }
       }
       this.endTracking();
@@ -378,6 +387,31 @@ export class MobileLayoutOptimizer {
     element.style.setProperty('--thumb-zone-left', `${thumbZone.left}px`);
     element.style.setProperty('--thumb-zone-right', `${thumbZone.right}px`);
     element.style.setProperty('--thumb-zone-bottom', `${thumbZone.bottom}px`);
+    
+    // Find and optimize interactive elements within the container
+    const interactiveElements = element.querySelectorAll('button, a, [role="button"], input[type="submit"], input[type="button"]');
+    
+    interactiveElements.forEach(el => {
+      const interactiveEl = el as HTMLElement;
+      const rect = interactiveEl.getBoundingClientRect();
+      
+      // Check if element is in a hard-to-reach zone (top of screen on mobile)
+      if (rect.top < 150 && rect.right > window.innerWidth - 60) {
+        // Move important actions to thumb-reachable zone
+        if (interactiveEl.classList.contains('primary-action')) {
+          interactiveEl.classList.add('thumb-nav-primary');
+        } else if (interactiveEl.classList.contains('secondary-action')) {
+          interactiveEl.classList.add('thumb-nav-secondary');
+        }
+      }
+    });
+    
+    // Add orientation-specific optimizations
+    if (deviceInfo.orientation === 'portrait') {
+      element.classList.add('thumb-optimized-portrait');
+    } else {
+      element.classList.add('thumb-optimized-landscape');
+    }
   }
 
   static addTouchFeedback(element: HTMLElement): void {
@@ -425,21 +459,61 @@ export class MobileLayoutOptimizer {
   }
 
   static optimizeTouchTargets(container: HTMLElement): void {
-    const touchTargets = container.querySelectorAll('button, a, [role="button"], input, select, textarea');
+    const touchTargets = container.querySelectorAll('button, a, [role="button"], input, select, textarea, label, .interactive');
     
     touchTargets.forEach((target) => {
       const element = target as HTMLElement;
       const rect = element.getBoundingClientRect();
       
-      // Ensure minimum touch target size
+      // Ensure minimum touch target size (44px per WCAG guidelines)
       if (rect.width < 44 || rect.height < 44) {
         element.style.minWidth = '44px';
         element.style.minHeight = '44px';
         element.classList.add('touch-target-optimized');
       }
       
+      // Ensure adequate spacing between touch targets (minimum 8px)
+      element.style.margin = 'calc(max(8px, var(--spacing-2)))';
+      
       // Add touch feedback
       this.addTouchFeedback(element);
+      
+      // Add data attribute for testing and styling
+      element.setAttribute('data-touch-optimized', 'true');
+      
+      // For small touch targets that can't be enlarged (like icons in a tight UI),
+      // create an invisible touch area around them
+      if (rect.width < 44 || rect.height < 44) {
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.display = 'inline-block';
+        
+        // Only apply if element isn't already wrapped
+        if (!element.parentElement?.classList.contains('touch-target-wrapper')) {
+          element.parentNode?.insertBefore(wrapper, element);
+          wrapper.appendChild(element);
+          wrapper.classList.add('touch-target-wrapper');
+          
+          // Create the invisible touch area
+          const touchArea = document.createElement('div');
+          touchArea.classList.add('extended-touch-area');
+          touchArea.style.position = 'absolute';
+          touchArea.style.top = '-8px';
+          touchArea.style.left = '-8px';
+          touchArea.style.right = '-8px';
+          touchArea.style.bottom = '-8px';
+          touchArea.style.minWidth = '44px';
+          touchArea.style.minHeight = '44px';
+          touchArea.style.zIndex = '1';
+          
+          wrapper.appendChild(touchArea);
+          
+          // Forward click events from touch area to the actual element
+          touchArea.addEventListener('click', () => {
+            element.click();
+          });
+        }
+      }
     });
   }
 }
@@ -452,11 +526,37 @@ export class MobilePerformanceOptimizer {
     // Enable momentum scrolling on iOS
     (element.style as any).webkitOverflowScrolling = 'touch';
     element.style.scrollBehavior = 'smooth';
+    
+    // Prevent scroll chaining (overscroll behavior)
+    element.style.overscrollBehavior = 'contain';
+    
+    // Optimize passive event listeners for scroll performance
+    const scrollableElements = element.querySelectorAll('.scrollable');
+    scrollableElements.forEach(el => {
+      el.addEventListener('touchstart', () => {}, { passive: true });
+      el.addEventListener('touchmove', () => {}, { passive: true });
+    });
   }
 
   static preventZoom(element: HTMLElement): void {
     // Prevent double-tap zoom on specific elements
     element.style.touchAction = 'manipulation';
+    
+    // Add specific touch action for different interaction types
+    const buttons = element.querySelectorAll('button, [role="button"]');
+    buttons.forEach(btn => {
+      (btn as HTMLElement).style.touchAction = 'manipulation';
+    });
+    
+    const scrollables = element.querySelectorAll('.scrollable');
+    scrollables.forEach(scroll => {
+      (scroll as HTMLElement).style.touchAction = 'pan-y';
+    });
+    
+    const horizontalScrollables = element.querySelectorAll('.horizontal-scroll');
+    horizontalScrollables.forEach(scroll => {
+      (scroll as HTMLElement).style.touchAction = 'pan-x';
+    });
   }
 
   static optimizeAnimations(): void {
@@ -466,11 +566,90 @@ export class MobilePerformanceOptimizer {
     if (deviceInfo.pixelRatio < 2) {
       document.documentElement.classList.add('reduced-animations');
     }
+    
+    // Detect low memory conditions
+    if ('deviceMemory' in navigator) {
+      // @ts-ignore - deviceMemory not in standard TypeScript navigator type
+      const memory = navigator.deviceMemory;
+      if (memory && memory < 4) {
+        document.documentElement.classList.add('low-memory-device');
+      }
+    }
+    
+    // Detect battery status for further optimizations
+    if ('getBattery' in navigator) {
+      // @ts-ignore - getBattery not in standard TypeScript navigator type
+      navigator.getBattery().then((battery: any) => {
+        if (battery.level < 0.2 && !battery.charging) {
+          // Low battery mode - reduce animations and effects
+          document.documentElement.classList.add('battery-saver');
+        }
+      }).catch(() => {
+        // Battery API not available, do nothing
+      });
+    }
   }
 
   static enableHardwareAcceleration(element: HTMLElement): void {
     element.style.transform = 'translateZ(0)';
     element.style.willChange = 'transform';
+    
+    // Add hardware acceleration to animated elements
+    const animatedElements = element.querySelectorAll('.animated, .transition');
+    animatedElements.forEach(el => {
+      (el as HTMLElement).classList.add('hardware-accelerated');
+    });
+    
+    // Optimize paint performance
+    element.style.backfaceVisibility = 'hidden';
+    
+    // Optimize layers for complex elements
+    const complexElements = element.querySelectorAll('.complex-element');
+    complexElements.forEach(el => {
+      (el as HTMLElement).style.willChange = 'transform, opacity';
+      (el as HTMLElement).style.transform = 'translateZ(0)';
+    });
+  }
+  
+  static optimizeImages(container: HTMLElement): void {
+    const images = container.querySelectorAll('img');
+    
+    images.forEach(img => {
+      // Add loading="lazy" for images
+      img.setAttribute('loading', 'lazy');
+      
+      // Add decoding="async" for non-critical images
+      if (!img.classList.contains('critical')) {
+        img.setAttribute('decoding', 'async');
+      }
+      
+      // Use appropriate image sizes for screen
+      const deviceInfo = MobileDetector.getDeviceInfo();
+      if (deviceInfo.isMobile) {
+        // If srcset isn't already set, and there's a data attribute with srcset info
+        if (!img.hasAttribute('srcset') && img.hasAttribute('data-srcset')) {
+          img.setAttribute('srcset', img.getAttribute('data-srcset') || '');
+        }
+      }
+    });
+  }
+  
+  static optimizeTouchResponsiveness(container: HTMLElement): void {
+    // Add touch-action properties to improve responsiveness
+    container.querySelectorAll('button, a, [role="button"]').forEach(el => {
+      (el as HTMLElement).style.touchAction = 'manipulation';
+    });
+    
+    // Remove 300ms tap delay on mobile browsers
+    const meta = document.querySelector('meta[name="viewport"]');
+    if (meta) {
+      let content = meta.getAttribute('content') || '';
+      if (!content.includes('user-scalable=no')) {
+        // We don't want to disable scaling completely for accessibility reasons
+        // but we can optimize touch behavior
+        document.body.style.touchAction = 'manipulation';
+      }
+    }
   }
 }
 
