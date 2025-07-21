@@ -39,6 +39,11 @@ npm run build
 - **Input Validation**: ESLint rules prevent dangerous patterns
 - **TypeScript Strict Mode**: Enhanced type safety
 - **Pre-build Security Checks**: Automated security verification before builds
+- **HTTPS Enforcement**: Automatic redirection to HTTPS in production
+- **Content Security Policy**: Strict CSP implementation to prevent XSS attacks
+- **Secure Storage**: Sensitive data stored in memory only, not in localStorage
+- **Rate Limiting**: Protection against abuse with configurable rate limits
+- **Security Monitoring**: Comprehensive logging and monitoring of security events
 
 ## 🧪 Testing
 
@@ -101,3 +106,30 @@ This setup addresses the following requirements:
 - **6.2**: Package name verification against typosquatting
 - **6.3**: Preference for packages with >1M downloads
 - **6.4**: GitHub repository and maintainer verification
+- **6.5**: Rate limiting with maximum 10 requests per minute per user
+- **6.6**: Parameterized queries for database operations (placeholder implementation)
+- **6.7**: Input sanitization and validation for all user data
+- **6.8**: Secure error logging without exposing internal details
+- **6.9**: Restrictive Content Security Policy implementation
+- **6.10**: Client-side and server-side input validation
+- **6.11**: HTTPS enforcement for all communications
+- **6.12**: Secure storage with sensitive data in memory only
+- **6.13**: Secure session management for future authentication
+- **6.14**: File upload validation and security scanning
+
+## 🔐 Security Hardening
+
+The application includes comprehensive security hardening:
+
+```bash
+# Run full security audit
+npm run security:full-audit
+
+# Run penetration testing
+npm run security:pentest
+
+# Run all security checks
+npm run security:hardening
+```
+
+For more details on security features and best practices, see [SECURITY.md](./SECURITY.md).

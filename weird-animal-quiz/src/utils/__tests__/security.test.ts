@@ -10,10 +10,13 @@ import {
   CSPManager,
   HTTPSEnforcer,
   InputSanitizer,
+  DatabaseSecurity,
+  SecurityAuditor,
   rateLimiter,
   secureStorage,
   securityMonitor,
-  initializeSecurity
+  initializeSecurity,
+  SECURITY_CONFIG
 } from '../security';
 
 // Mock localStorage

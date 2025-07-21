@@ -18,11 +18,57 @@ export default defineConfig({
   server: {
     // Security headers for development server
     headers: {
+      // Content Security Policy
+      'Content-Security-Policy': `
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval';
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: https:;
+        font-src 'self';
+        connect-src 'self';
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+        object-src 'none';
+        upgrade-insecure-requests;
+      `.replace(/\s+/g, ' ').trim(),
+      
+      // Protection against MIME type confusion attacks
       'X-Content-Type-Options': 'nosniff',
+      
+      // Protection against clickjacking
       'X-Frame-Options': 'DENY',
+      
+      // Protection against XSS
       'X-XSS-Protection': '1; mode=block',
+      
+      // Control referrer information
       'Referrer-Policy': 'strict-origin-when-cross-origin',
+      
+      // HTTP Strict Transport Security
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+      
+      // Permissions Policy (formerly Feature Policy)
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+      
+      // Cross-Origin Resource Sharing - restrict to same origin
+      'Access-Control-Allow-Origin': 'null',
+      
+      // Cross-Origin Opener Policy - isolate cross-origin windows
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      
+      // Cross-Origin Embedder Policy - require CORP or CORS
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      
+      // Cross-Origin Resource Policy - restrict to same origin
+      'Cross-Origin-Resource-Policy': 'same-origin',
     },
+    
+    // HTTPS for development server
+    https: process.env.HTTPS === 'true' ? {
+      // In a real project, you would use proper certificates
+      // This is just for development purposes
+    } : false,
   },
   build: {
     // Target bundle size under 200KB
