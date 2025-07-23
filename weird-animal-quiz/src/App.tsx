@@ -87,7 +87,7 @@ function App() {
         setIsPreloading(false);
 
         // Log performance report in development
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.MODE === 'development') {
           setTimeout(() => {
             PerformanceMonitor.logReport();
           }, 2000);
@@ -123,7 +123,7 @@ function App() {
     }
 
     // Validate touch targets in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       setTimeout(() => {
         TouchTargetValidator.logTouchTargetValidation();
       }, 1000);
@@ -179,7 +179,7 @@ function App() {
 
   return (
     <div 
-      ref={mobileRef} 
+      ref={mobileRef as React.Ref<HTMLDivElement>}
       className={`app ${mobileClassNames}`}
       data-breakpoint={currentBreakpoint}
       data-device-type={deviceInfo.isMobile ? 'mobile' : deviceInfo.isTablet ? 'tablet' : 'desktop'}
@@ -213,7 +213,7 @@ function App() {
       </Button>
 
       {/* Development indicators */}
-      {process.env.NODE_ENV === 'development' && (
+      {import.meta.env.MODE === 'development' && (
         <div style={{ 
           position: 'fixed', 
           top: 10, 

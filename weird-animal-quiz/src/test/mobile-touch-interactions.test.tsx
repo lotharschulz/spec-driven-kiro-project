@@ -14,7 +14,7 @@ import {
   MobileLayoutOptimizer
 } from '../utils/mobileUtils';
 import { QuizProvider } from '../contexts/QuizContext';
-import { Button } from '../components/Button';
+import Button from '../components/Button';
 import { Question } from '../types/quiz';
 import { useMobileOptimization } from '../hooks/useMobileOptimization';
 

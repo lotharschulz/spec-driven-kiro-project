@@ -7,10 +7,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuiz } from '../contexts/QuizContext';
 import type { Question } from '../types/quiz';
 import { Difficulty } from '../types/quiz';
-import { Button } from './Button';
-import { Timer } from './Timer';
-import { ProgressTracker } from './ProgressTracker';
-import { FeedbackDisplay } from './FeedbackDisplay';
+import Button from './Button';
+import Timer from './Timer';
+import ProgressTracker from './ProgressTracker';
+import FeedbackDisplay from './FeedbackDisplay';
 import { generateHint, HintType, type HintResult } from '../utils/hintSystem';
 import { 
   FocusManager, 
@@ -312,22 +312,20 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           
           <div className={styles.emojis} role="presentation" aria-hidden="true">
             {question.emojis.map((emoji, index) => (
-              <span key={index} className={styles.emoji} role="img" aria-hidden="true">
-                {emoji}
-              </span>
+              <span key={index} className={styles.emoji} role="img" aria-label={`Question emoji ${index + 1}`}>{emoji}</span>
             ))}
           </div>
         </header>
 
         {/* Question Text */}
         <section className={styles.questionContent}>
-          <h1 
+          <h2 
             className={styles.questionText}
             id="current-question"
             tabIndex={-1}
           >
             {question.text}
-          </h1>
+          </h2>
         </section>
 
         {/* Answer Options */}
@@ -352,7 +350,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               const variant = getAnswerButtonVariant(answer.id);
               const isEliminated = eliminatedAnswers.includes(answer.id);
               const disabled = isAnswerDisabled(answer.id);
-              
+              // ARIA label: 'Answer option 1: Koala', etc.
+              const ariaLabel = `Answer option ${index + 1}: ${answer.text}`;
               return (
                 <Button
                   key={answer.id}
@@ -366,15 +365,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                   disabled={disabled}
                   role="radio"
                   aria-checked={isSelected}
-                  aria-label={AriaLabels.answerButton(
-                    String.fromCharCode(65 + index),
-                    answer.text,
-                    index,
-                    question.answers.length,
-                    isSelected,
-                    isSelected ? answer.isCorrect : undefined,
-                    isEliminated
-                  )}
+                  aria-label={ariaLabel}
                   aria-describedby={isEliminated ? `eliminated-${index}` : undefined}
                 >
                   <span className={styles.answerLetter} aria-hidden="true">
@@ -455,13 +446,13 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         </section>
 
         {/* Feedback Display */}
-        {state.showingFeedback && lastAnswer && selectedAnswerObj && (
+        {showFeedback && lastAnswer && selectedAnswerObj && (
           <FeedbackDisplay
             question={question}
             selectedAnswer={selectedAnswerObj}
             isCorrect={lastAnswer.isCorrect}
             onNext={nextQuestion}
-            show={state.showingFeedback}
+            show={showFeedback}
             minReadingTime={20}
           />
         )}

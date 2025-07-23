@@ -7,10 +7,11 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { QuizProvider } from '../../contexts/QuizContext';
-import { QuestionCard } from '../QuestionCard';
-import { Question, Difficulty } from '../../types/quiz';
+import QuestionCard from '../QuestionCard';
+import type { Question } from '../../types/quiz';
+import { Difficulty } from '../../types/quiz';
 
 // Mock question data
 const mockQuestion: Question = {

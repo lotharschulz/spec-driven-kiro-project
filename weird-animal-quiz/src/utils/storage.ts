@@ -9,9 +9,10 @@
  * - Provides data cleanup and memory management
  */
 
+
 import type { QuizState, Question, UserResponse } from '../types/quiz';
 import { validateQuestionId } from './validation';
-// import { logSecurityEvent } from './errorMonitoring';
+import { securityMonitor } from './security';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -50,7 +51,7 @@ interface SensitiveData {
 
 class SecureStorageManager {
   private sensitiveData: Map<string, SensitiveData> = new Map();
-  private autoSaveInterval: NodeJS.Timeout | null = null;
+  private autoSaveInterval: ReturnType<typeof setInterval> | null = null;
   private readonly AUTO_SAVE_INTERVAL = 10000; // 10 seconds
   private readonly STORAGE_VERSION = '1.0.0';
 
@@ -66,9 +67,8 @@ class SecureStorageManager {
     try {
       // Validate input data
       if (!this.validateQuizState(state)) {
-        logSecurityEvent({
+        securityMonitor.logSecurityEvent({
           type: 'INVALID_INPUT',
-          timestamp: new Date(),
           details: 'Invalid quiz state provided to saveQuizProgress'
         });
         return false;
@@ -103,9 +103,8 @@ class SecureStorageManager {
       return true;
     } catch (error) {
       console.error('Failed to save quiz progress:', error);
-      logSecurityEvent({
+      securityMonitor.logSecurityEvent({
         type: 'SUSPICIOUS_ACTIVITY',
-        timestamp: new Date(),
         details: `Storage error: ${error instanceof Error ? error.message : 'Unknown error'}`
       });
       return false;
@@ -154,8 +153,7 @@ class SecureStorageManager {
       };
 
       return partialState;
-    } catch (error) {
-      console.error('Failed to load quiz progress:', error);
+    } catch {
       this.clearQuizProgress(); // Clear corrupted data
       return null;
     }
@@ -339,15 +337,15 @@ class SecureStorageManager {
    */
   private validateSafeStorageData(data: unknown): data is SafeStorageData {
     if (!data || typeof data !== 'object') return false;
-    if (typeof data.currentQuestionIndex !== 'number') return false;
-    if (typeof data.difficulty !== 'string') return false;
-    if (typeof data.startTime !== 'string') return false;
-    if (!Array.isArray(data.hintsUsed)) return false;
-    if (typeof data.totalQuestions !== 'number') return false;
-    if (typeof data.isComplete !== 'boolean') return false;
-    if (typeof data.lastSaveTime !== 'string') return false;
-    if (typeof data.version !== 'string') return false;
-
+    const d = data as SafeStorageData;
+    if (typeof d.currentQuestionIndex !== 'number') return false;
+    if (typeof d.difficulty !== 'string') return false;
+    if (typeof d.startTime !== 'string') return false;
+    if (!Array.isArray(d.hintsUsed)) return false;
+    if (typeof d.totalQuestions !== 'number') return false;
+    if (typeof d.isComplete !== 'boolean') return false;
+    if (typeof d.lastSaveTime !== 'string') return false;
+    if (typeof d.version !== 'string') return false;
     return true;
   }
 
@@ -385,4 +383,3 @@ class SecureStorageManager {
 export const storageManager = new SecureStorageManager();
 
 // Export types and interfaces
-export type { SafeStorageData, UserPreferences };

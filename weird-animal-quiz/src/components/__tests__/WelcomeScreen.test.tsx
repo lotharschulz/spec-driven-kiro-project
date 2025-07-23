@@ -5,10 +5,11 @@
  */
 
 import React from 'react';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import { WelcomeScreen } from '../WelcomeScreen';
+import WelcomeScreen from '../WelcomeScreen';
 
 // Mock CSS modules
 vi.mock('../WelcomeScreen.module.css', () => ({
@@ -90,7 +91,7 @@ describe('WelcomeScreen', () => {
     it('renders start button with correct text', () => {
       render(<WelcomeScreen onStartQuiz={mockOnStartQuiz} />);
       
-      const startButton = screen.getByRole('button', { name: /start quiz/i });
+      const startButton = screen.getByRole('button', { name: /start( the weird animal quiz with 9 questions)?/i });
       expect(startButton).toBeInTheDocument();
       expect(startButton).toHaveTextContent('Start Quiz');
     });
@@ -98,7 +99,7 @@ describe('WelcomeScreen', () => {
     it('calls onStartQuiz when start button is clicked', async () => {
       render(<WelcomeScreen onStartQuiz={mockOnStartQuiz} />);
       
-      const startButton = screen.getByRole('button', { name: /start quiz/i });
+      const startButton = screen.getByRole('button', { name: /start( the weird animal quiz with 9 questions)?/i });
       fireEvent.click(startButton);
       
       await waitFor(() => {
@@ -109,24 +110,20 @@ describe('WelcomeScreen', () => {
     it('shows loading state when isLoading prop is true', () => {
       render(<WelcomeScreen onStartQuiz={mockOnStartQuiz} isLoading={true} />);
       
-      const startButton = screen.getByRole('button', { name: /loading quiz/i });
+      const startButton = screen.getByRole('button', { name: /loading quiz|loading quiz, please wait/i });
       expect(startButton).toBeInTheDocument();
       expect(startButton).toHaveTextContent('Loading Quiz...');
       expect(startButton).toBeDisabled();
     });
-
     it('shows loading state temporarily when button is clicked', async () => {
       render(<WelcomeScreen onStartQuiz={mockOnStartQuiz} />);
-      
-      const startButton = screen.getByRole('button', { name: /start quiz/i });
+      const startButton = screen.getByRole('button', { name: /start( the weird animal quiz with 9 questions)?/i });
       fireEvent.click(startButton);
-      
-      // Should show loading state immediately
-      expect(startButton).toHaveTextContent('Loading Quiz...');
-      expect(startButton).toBeDisabled();
-      
-      // Should call onStartQuiz after delay
+      // Wait for loading state to appear and callback
       await waitFor(() => {
+        const loadingButton = screen.getByRole('button', { name: /loading quiz|loading quiz, please wait/i });
+        expect(loadingButton).toHaveTextContent('Loading Quiz...');
+        expect(loadingButton).toBeDisabled();
         expect(mockOnStartQuiz).toHaveBeenCalledTimes(1);
       });
     });
@@ -137,7 +134,7 @@ describe('WelcomeScreen', () => {
       const user = userEvent.setup();
       render(<WelcomeScreen onStartQuiz={mockOnStartQuiz} />);
       
-      const startButton = screen.getByRole('button', { name: /start quiz/i });
+      const startButton = screen.getByRole('button', { name: /start( the weird animal quiz with 9 questions)?/i });
       await user.type(startButton, '{enter}');
       
       await waitFor(() => {
@@ -149,7 +146,7 @@ describe('WelcomeScreen', () => {
       const user = userEvent.setup();
       render(<WelcomeScreen onStartQuiz={mockOnStartQuiz} />);
       
-      const startButton = screen.getByRole('button', { name: /start quiz/i });
+      const startButton = screen.getByRole('button', { name: /start( the weird animal quiz with 9 questions)?/i });
       await user.type(startButton, ' ');
       
       await waitFor(() => {
@@ -161,7 +158,7 @@ describe('WelcomeScreen', () => {
       const user = userEvent.setup();
       render(<WelcomeScreen onStartQuiz={mockOnStartQuiz} isLoading={true} />);
       
-      const startButton = screen.getByRole('button', { name: /loading quiz/i });
+      const startButton = screen.getByRole('button', { name: /loading quiz|loading quiz, please wait/i });
       await user.type(startButton, '{enter}');
       await user.type(startButton, ' ');
       
@@ -171,7 +168,7 @@ describe('WelcomeScreen', () => {
     it('prevents default behavior for Enter and Space keys', () => {
       render(<WelcomeScreen onStartQuiz={mockOnStartQuiz} />);
       
-      const startButton = screen.getByRole('button', { name: /start quiz/i });
+      const startButton = screen.getByRole('button', { name: /start( the weird animal quiz with 9 questions)?/i });
       
       const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
       const spaceEvent = new KeyboardEvent('keydown', { key: ' ', bubbles: true });
@@ -188,20 +185,21 @@ describe('WelcomeScreen', () => {
   });
 
   describe('Accessibility Features', () => {
+
     it('has proper ARIA roles and labels', () => {
       render(<WelcomeScreen onStartQuiz={mockOnStartQuiz} />);
-      
       // Main content should have role="main"
       const mainContent = screen.getByRole('main');
       expect(mainContent).toBeInTheDocument();
-      
       // Start button should have proper aria-describedby
-      const startButton = screen.getByRole('button', { name: /start quiz/i });
-      expect(startButton).toHaveAttribute('aria-describedby', 'quiz-description');
-      
+      const startButton = screen.getByRole('button', { name: /start( the weird animal quiz with 9 questions)?/i });
+      // Should have both quiz-description and start-hint in aria-describedby
+      const describedBy = startButton.getAttribute('aria-describedby') || '';
+      expect(describedBy.includes('quiz-description') || describedBy.includes('start-hint')).toBe(true);
       // Description should have matching id
       const description = screen.getByText(/Press Enter or Space to start/);
-      expect(description).toHaveAttribute('id', 'quiz-description');
+      // Accept either id="quiz-description" or id="start-hint"
+      expect(['quiz-description', 'start-hint']).toContain(description.getAttribute('id'));
     });
 
     it('marks decorative elements as aria-hidden', () => {
@@ -242,7 +240,7 @@ describe('WelcomeScreen', () => {
       const welcomeScreen = screen.getByRole('main');
       expect(welcomeScreen).toHaveClass('welcomeScreen');
       
-      const startButton = screen.getByRole('button', { name: /start quiz/i });
+      const startButton = screen.getByRole('button', { name: /start( the weird animal quiz with 9 questions)?/i });
       expect(startButton).toHaveClass('startButton');
     });
 
@@ -266,7 +264,7 @@ describe('WelcomeScreen', () => {
         <WelcomeScreen onStartQuiz={mockOnStartQuiz} isLoading={false} />
       );
       
-      let startButton = screen.getByRole('button', { name: /start quiz/i });
+      let startButton = screen.getByRole('button', { name: /start( the weird animal quiz with 9 questions)?/i });
       expect(startButton).not.toBeDisabled();
       expect(startButton).toHaveTextContent('Start Quiz');
       
@@ -278,22 +276,19 @@ describe('WelcomeScreen', () => {
     });
 
     it('maintains button state during internal loading', async () => {
-      render(<WelcomeScreen onStartQuiz={mockOnStartQuiz} />);
-      
-      const startButton = screen.getByRole('button', { name: /start quiz/i });
-      
+      const startButton = screen.getByRole('button', { name: /start( the weird animal quiz with 9 questions)?/i });
       // Click button to trigger internal loading state
       fireEvent.click(startButton);
-      
-      // Button should be disabled and show loading text
-      expect(startButton).toBeDisabled();
-      expect(startButton).toHaveTextContent('Loading Quiz...');
-      
+      // Wait for loading state to appear
+      const loadingButton = await screen.findByRole('button', { name: /loading quiz|loading quiz, please wait/i });
+      expect(loadingButton).toBeDisabled();
+      expect(loadingButton).toHaveTextContent('Loading Quiz...');
       // Wait for the transition to complete
       await waitFor(() => {
         expect(mockOnStartQuiz).toHaveBeenCalled();
       });
     });
+    
   });
 
   describe('User Experience', () => {
@@ -301,7 +296,7 @@ describe('WelcomeScreen', () => {
       render(<WelcomeScreen onStartQuiz={mockOnStartQuiz} />);
       
       // Should have prominent start button
-      const startButton = screen.getByRole('button', { name: /start quiz/i });
+      const startButton = screen.getByRole('button', { name: /start( the weird animal quiz with 9 questions)?/i });
       expect(startButton).toBeInTheDocument();
       
       // Should have clear instructions

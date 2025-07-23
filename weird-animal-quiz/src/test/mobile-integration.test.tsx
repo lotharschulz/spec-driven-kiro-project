@@ -7,14 +7,15 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
-import { 
-  MobileDetector, 
-  HapticFeedback, 
+import { vi } from 'vitest';
+import {
+  MobileDetector,
+  HapticFeedback,
   TouchGestureHandler,
   SwipeGestureHandler,
   MobileLayoutOptimizer,
   MobilePerformanceOptimizer,
-  ResponsiveBreakpoints 
+  ResponsiveBreakpoints
 } from '../utils/mobileUtils';
 import { QuizProvider } from '../contexts/QuizContext';
 import QuestionCard from '../components/QuestionCard';
@@ -22,7 +23,7 @@ import Button from '../components/Button';
 import { Question } from '../types/quiz';
 
 // Mock navigator.vibrate for haptic feedback tests
-const mockVibrate = jest.fn();
+const mockVibrate = vi.fn();
 Object.defineProperty(navigator, 'vibrate', {
   value: mockVibrate,
   writable: true,
@@ -72,7 +73,7 @@ describe('Mobile Device Detection', () => {
   beforeEach(() => {
     // Reset device info cache
     (MobileDetector as any).deviceInfo = null;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('detects mobile devices correctly', () => {
@@ -146,7 +147,7 @@ describe('Mobile Device Detection', () => {
 
 describe('Haptic Feedback', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     HapticFeedback.setEnabled(true);
   });
 
@@ -182,7 +183,7 @@ describe('Haptic Feedback', () => {
     await HapticFeedback.success();
     expect(mockVibrate).toHaveBeenCalledWith([10, 50, 10, 50, 20]);
     
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     
     await HapticFeedback.error();
     expect(mockVibrate).toHaveBeenCalledWith([50, 100, 50]);
@@ -303,7 +304,7 @@ describe('Responsive Breakpoints', () => {
   });
 
   test('calls breakpoint change listeners', () => {
-    const listener = jest.fn();
+    const listener = vi.fn();
     const unsubscribe = ResponsiveBreakpoints.onBreakpointChange(listener);
 
     mockWindowProperties({ innerWidth: 375 });
@@ -334,8 +335,8 @@ describe('Mobile Component Integration', () => {
 
   test('QuestionCard handles touch interactions', async () => {
     mockUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)');
-    const onAnswer = jest.fn();
-    const onHintUsed = jest.fn();
+    const onAnswer = vi.fn();
+    const onHintUsed = vi.fn();
 
     render(
       <QuizProvider>
@@ -441,14 +442,14 @@ describe('Mobile Performance Optimization', () => {
 
 describe('Touch Interaction Accessibility', () => {
   test('maintains focus management during touch interactions', async () => {
-    const onAnswer = jest.fn();
+    const onAnswer = vi.fn();
     
     render(
       <QuizProvider>
         <QuestionCard
           question={mockQuestion}
           onAnswer={onAnswer}
-          onHintUsed={jest.fn()}
+          onHintUsed={vi.fn()}
           timeRemaining={30}
           hintAvailable={true}
           difficulty="easy"
@@ -482,7 +483,7 @@ describe('Viewport and Safe Area Handling', () => {
   test('handles safe area insets on mobile devices', () => {
     // Mock CSS.supports for safe area support
     const originalSupports = CSS.supports;
-    CSS.supports = jest.fn().mockReturnValue(true);
+    CSS.supports = vi.fn().mockReturnValue(true);
 
     const element = document.createElement('div');
     element.className = 'safe-area-inset-top';

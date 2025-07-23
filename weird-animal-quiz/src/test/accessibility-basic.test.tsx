@@ -9,7 +9,7 @@ import { render, screen } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { vi } from 'vitest';
 import { WelcomeScreen } from '../components/WelcomeScreen';
-import { Button } from '../components/Button';
+import Button from '../components/Button';
 import { AccessibilitySettings } from '../components/AccessibilitySettings';
 import { AriaLabels, TouchTargetValidator } from '../utils/accessibility';
 

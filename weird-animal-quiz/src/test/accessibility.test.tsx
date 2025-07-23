@@ -9,9 +9,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import { WelcomeScreen } from '../components/WelcomeScreen';
-import { QuestionCard } from '../components/QuestionCard';
-import { Button } from '../components/Button';
+import WelcomeScreen from '../components/WelcomeScreen';
+import QuestionCard from '../components/QuestionCard';
+import Button from '../components/Button';
 import { AccessibilitySettings } from '../components/AccessibilitySettings';
 import { QuizProvider } from '../contexts/QuizContext';
 import { TouchTargetValidator, FocusManager, AriaLabels } from '../utils/accessibility';
@@ -65,8 +65,8 @@ describe('Accessibility Tests', () => {
         <QuizProvider>
           <QuestionCard
             question={mockQuestion}
-            onAnswer={jest.fn()}
-            onHintUsed={jest.fn()}
+            onAnswer={vi.fn()}
+            onHintUsed={vi.fn()}
           />
         </QuizProvider>
       );
@@ -79,7 +79,7 @@ describe('Accessibility Tests', () => {
       const { container } = render(
         <AccessibilitySettings
           isOpen={true}
-          onClose={jest.fn()}
+          onClose={vi.fn()}
         />
       );
       
@@ -90,7 +90,7 @@ describe('Accessibility Tests', () => {
 
   describe('Semantic HTML and ARIA Labels', () => {
     test('WelcomeScreen uses proper semantic HTML', () => {
-      render(<WelcomeScreen onStartQuiz={jest.fn()} />);
+      render(<WelcomeScreen onStartQuiz={vi.fn()} />);
       
       // Check for proper semantic elements
       expect(screen.getByRole('main')).toBeInTheDocument();
@@ -110,8 +110,8 @@ describe('Accessibility Tests', () => {
         <QuizProvider>
           <QuestionCard
             question={mockQuestion}
-            onAnswer={jest.fn()}
-            onHintUsed={jest.fn()}
+            onAnswer={vi.fn()}
+            onHintUsed={vi.fn()}
           />
         </QuizProvider>
       );
@@ -153,7 +153,7 @@ describe('Accessibility Tests', () => {
   describe('Keyboard Navigation', () => {
     test('WelcomeScreen supports keyboard navigation', async () => {
       const user = userEvent.setup();
-      const mockStartQuiz = jest.fn();
+      const mockStartQuiz = vi.fn();
       
       render(<WelcomeScreen onStartQuiz={mockStartQuiz} />);
       
@@ -170,14 +170,14 @@ describe('Accessibility Tests', () => {
 
     test('QuestionCard supports arrow key navigation', async () => {
       const user = userEvent.setup();
-      const mockOnAnswer = jest.fn();
+      const mockOnAnswer = vi.fn();
       
       render(
         <QuizProvider>
           <QuestionCard
             question={mockQuestion}
             onAnswer={mockOnAnswer}
-            onHintUsed={jest.fn()}
+            onHintUsed={vi.fn()}
           />
         </QuizProvider>
       );
@@ -202,7 +202,7 @@ describe('Accessibility Tests', () => {
 
     test('AccessibilitySettings modal traps focus', async () => {
       const user = userEvent.setup();
-      const mockOnClose = jest.fn();
+      const mockOnClose = vi.fn();
       
       render(
         <AccessibilitySettings
@@ -225,8 +225,8 @@ describe('Accessibility Tests', () => {
           <QuizProvider>
             <QuestionCard
               question={mockQuestion}
-              onAnswer={jest.fn()}
-              onHintUsed={jest.fn()}
+              onAnswer={vi.fn()}
+              onHintUsed={vi.fn()}
             />
           </QuizProvider>
         </div>
@@ -273,8 +273,8 @@ describe('Accessibility Tests', () => {
         <QuizProvider>
           <QuestionCard
             question={mockQuestion}
-            onAnswer={jest.fn()}
-            onHintUsed={jest.fn()}
+            onAnswer={vi.fn()}
+            onHintUsed={vi.fn()}
           />
         </QuizProvider>
       );
@@ -311,7 +311,7 @@ describe('Accessibility Tests', () => {
     test('High contrast mode applies proper styles', () => {
       document.documentElement.classList.add('high-contrast');
       
-      render(<WelcomeScreen onStartQuiz={jest.fn()} />);
+      render(<WelcomeScreen onStartQuiz={vi.fn()} />);
       
       // Check that high contrast class is applied
       expect(document.documentElement).toHaveClass('high-contrast');
@@ -323,7 +323,7 @@ describe('Accessibility Tests', () => {
     test('Large text mode increases font sizes', () => {
       document.documentElement.classList.add('large-text');
       
-      render(<WelcomeScreen onStartQuiz={jest.fn()} />);
+      render(<WelcomeScreen onStartQuiz={vi.fn()} />);
       
       // Check that large text class is applied
       expect(document.documentElement).toHaveClass('large-text');
@@ -335,7 +335,7 @@ describe('Accessibility Tests', () => {
     test('Reduced motion mode disables animations', () => {
       document.documentElement.classList.add('reduced-motion');
       
-      render(<WelcomeScreen onStartQuiz={jest.fn()} />);
+      render(<WelcomeScreen onStartQuiz={vi.fn()} />);
       
       // Check that reduced motion class is applied
       expect(document.documentElement).toHaveClass('reduced-motion');
@@ -404,8 +404,8 @@ describe('Accessibility Tests', () => {
         <QuizProvider>
           <QuestionCard
             question={mockQuestion}
-            onAnswer={jest.fn()}
-            onHintUsed={jest.fn()}
+            onAnswer={vi.fn()}
+            onHintUsed={vi.fn()}
           />
         </QuizProvider>
       );
@@ -436,7 +436,7 @@ describe('Integration Accessibility Tests', () => {
             <QuestionCard
               question={mockQuestion}
               onAnswer={() => setStep('complete')}
-              onHintUsed={jest.fn()}
+              onHintUsed={vi.fn()}
             />
           </QuizProvider>
         );

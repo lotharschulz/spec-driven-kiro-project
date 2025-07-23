@@ -5,8 +5,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Button } from './Button';
-import { Typography } from './Typography';
+import Button from './Button';
+import Typography from './Typography';
 import { VisualAccessibility, type AccessibilityPreferences } from '../utils/accessibility';
 import styles from './AccessibilitySettings.module.css';
 

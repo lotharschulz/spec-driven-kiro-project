@@ -7,7 +7,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import ResultsScreen from '../ResultsScreen';
+import { ResultsScreen } from '../index';
 import { Difficulty, type Question, type UserResponse } from '../../types/quiz';
 
 // Mock framer-motion to avoid animation issues in tests

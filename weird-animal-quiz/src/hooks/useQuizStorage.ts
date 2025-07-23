@@ -7,7 +7,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useQuiz } from '../contexts/QuizContext';
 import { storageManager, type UserPreferences } from '../utils/storage';
-// import { logSecurityEvent } from '../utils/errorMonitoring';
+import { securityMonitor } from '../utils/security';
 
 interface UseQuizStorageOptions {
   autoSaveEnabled?: boolean;
@@ -31,7 +31,7 @@ export const useQuizStorage = (options: UseQuizStorageOptions = {}): UseQuizStor
     autoSaveInterval = 10000 // 10 seconds
   } = options;
 
-  const autoSaveRef = useRef<NodeJS.Timeout | null>(null);
+  const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastSaveRef = useRef<string>('');
 
   /**
@@ -50,9 +50,8 @@ export const useQuizStorage = (options: UseQuizStorageOptions = {}): UseQuizStor
       return success;
     } catch (error) {
       console.error('Failed to save progress:', error);
-      logSecurityEvent({
+      securityMonitor.logSecurityEvent({
         type: 'SUSPICIOUS_ACTIVITY',
-        timestamp: new Date(),
         details: `Storage save error: ${error instanceof Error ? error.message : 'Unknown error'}`
       });
       return false;

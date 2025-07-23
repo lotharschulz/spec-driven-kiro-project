@@ -7,7 +7,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { FeedbackDisplay } from '../FeedbackDisplay';
+import { FeedbackDisplay } from '../index';
 import type { Question, Answer } from '../../types/quiz';
 import { Difficulty } from '../../types/quiz';
 import styles from '../FeedbackDisplay.module.css';

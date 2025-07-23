@@ -4,8 +4,8 @@
  */
 
 import React, { useState } from 'react';
-import { FeedbackDisplay } from './FeedbackDisplay';
-import { Button } from './Button';
+import FeedbackDisplay from './FeedbackDisplay';
+import Button from './Button';
 import type { Question } from '../types/quiz';
 import { Difficulty } from '../types/quiz';
 

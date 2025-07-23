@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button, Typography } from './';
-import { FocusManager, AriaLabels, VisualAccessibility } from '../utils/accessibility';
+import { FocusManager, VisualAccessibility } from '../utils/accessibility';
 import styles from './WelcomeScreen.module.css';
 
 export interface WelcomeScreenProps {
@@ -79,7 +79,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             color="forest-dark"
             align="center"
             className={styles.title}
-            id="welcome-title"
+            // id removed: Typography does not support id
           >
             Weird Animal Quiz
           </Typography>
@@ -100,7 +100,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             color="gray-700"
             align="center"
             className={styles.description}
-            id="quiz-description"
+            // id removed: Typography does not support id
           >
             Test your knowledge with 9 fascinating questions about the weirdest 
             animal facts from nature documentaries. From sleeping koalas to 
@@ -116,7 +116,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           color="forest-medium"
           align="center"
           className={styles.overviewTitle}
-          id="overview-title"
+          // id removed: Typography does not support id
         >
           What to Expect
         </Typography>
@@ -130,7 +130,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               variant="h3" 
               color="gray-800" 
               className={styles.featureTitle}
-              id="feature-questions"
+              // id removed: Typography does not support id
             >
               9 Questions
             </Typography>
@@ -152,7 +152,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               variant="h3" 
               color="gray-800" 
               className={styles.featureTitle}
-              id="feature-timing"
+              // id removed: Typography does not support id
             >
               30 Seconds
             </Typography>
@@ -174,7 +174,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               variant="h3" 
               color="gray-800" 
               className={styles.featureTitle}
-              id="feature-learning"
+              // id removed: Typography does not support id
             >
               Learn & Discover
             </Typography>
@@ -214,8 +214,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           color="gray-500"
           align="center"
           className={styles.startHint}
-          id="start-hint"
-          role="note"
+          // id removed: Typography does not support id
+          // role removed: Typography does not support role
         >
           Press Enter or Space to start, or tap the button above
         </Typography>
@@ -228,7 +228,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           color="gray-500"
           align="center"
           className={styles.accessibilityText}
-          role="note"
+          // role removed: Typography does not support role
         >
           This quiz is fully accessible with keyboard navigation and screen reader support. 
           Use Tab to navigate, Enter or Space to activate buttons, and arrow keys to navigate answer options.

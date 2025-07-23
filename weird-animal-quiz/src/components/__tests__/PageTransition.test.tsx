@@ -5,7 +5,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
-import PageTransition from '../PageTransition';
+import { PageTransition } from '../index';
 import * as animationSystem from '../../utils/animationSystem';
 
 // Mock the animation system

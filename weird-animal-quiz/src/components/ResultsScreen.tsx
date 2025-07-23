@@ -19,7 +19,7 @@ export interface ResultsScreenProps {
   onRetryDifficulty: (difficulty: Difficulty) => void;
 }
 
-export const ResultsScreen: React.FC<ResultsScreenProps> = ({
+const ResultsScreen: React.FC<ResultsScreenProps> = ({
   onPlayAgain,
   onRetryDifficulty
 }) => {

@@ -5,8 +5,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from './Button';
-import { Typography } from './Typography';
+import Button from './Button';
+import Typography from './Typography';
 import type { Question, Answer } from '../types/quiz';
 import { 
   useReducedMotion, 
@@ -32,7 +32,7 @@ export interface FeedbackDisplayProps {
   minReadingTime?: number;
 }
 
-export const FeedbackDisplay: React.FC<FeedbackDisplayProps> = ({
+const FeedbackDisplay: React.FC<FeedbackDisplayProps> = ({
   question,
   selectedAnswer,
   isCorrect,
