@@ -1,0 +1,42 @@
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #4A7C59 60%, #EA580C 100%);
+  border-radius: 24px;
+  padding: 32px 16px 24px 16px;
+  margin-bottom: 24px;
+  color: #fff;
+  box-shadow: 0 2px 16px rgba(74, 124, 89, 0.08);
+}
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5em;
+  color: #fff;
+  text-align: center;
+}
+.subtitle {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1em;
+  color: #FB923C;
+  text-align: center;
+}
+.animals {
+  font-size: 2.5rem;
+  margin-bottom: 0.5em;
+}
+.overview {
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 1.5em;
+  text-align: center;
+}
+.accessibility {
+  margin-top: 1.5em;
+  font-size: 0.95rem;
+  color: #fff;
+  text-align: center;
+}

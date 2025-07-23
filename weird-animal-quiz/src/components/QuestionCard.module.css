@@ -1,0 +1,102 @@
+.card {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 2px 16px rgba(74, 124, 89, 0.08);
+  padding: 24px 16px 16px 16px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.question {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2D5016;
+  margin-bottom: 0.5em;
+  text-align: center;
+}
+.emojis {
+  font-size: 2rem;
+  margin-bottom: 0.5em;
+  text-align: center;
+}
+.difficulty {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 2px 12px;
+  margin-bottom: 0.5em;
+  color: #fff;
+}
+.difficulty-easy {
+  background: #4A7C59;
+}
+.difficulty-medium {
+  background: #3B82F6;
+}
+.difficulty-hard {
+  background: #EA580C;
+}
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0 8px 0;
+}
+.answerBtn {
+  min-height: 44px;
+  font-size: 1rem;
+  border-radius: 999px;
+  border: 2px solid #4A7C59;
+  background: #fff;
+  color: #2D5016;
+  font-weight: 600;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s, transform 0.1s;
+  outline: none;
+}
+.answerBtn:active {
+  transform: scale(0.97);
+}
+.answerBtn.selected {
+  background: #4A7C59;
+  color: #fff;
+  border-color: #3B82F6;
+}
+.answerBtn.correct {
+  background: #4A7C59;
+  color: #fff;
+  border-color: #4A7C59;
+}
+.answerBtn.incorrect {
+  background: #EA580C;
+  color: #fff;
+  border-color: #EA580C;
+}
+.hintBtn {
+  margin-top: 8px;
+  align-self: center;
+  font-size: 1rem;
+  min-width: 120px;
+  min-height: 44px;
+  background: #3B82F6;
+  color: #fff;
+  border-radius: 999px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+.hintBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.progress {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #4A7C59;
+}
