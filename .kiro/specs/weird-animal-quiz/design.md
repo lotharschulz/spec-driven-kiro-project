@@ -76,7 +76,6 @@ graph TB
 | **CSS Modules** | Scoped styles, no naming conflicts, mobile-first approach |
 | **Framer Motion** | Smooth animations, gesture support, performance optimized |
 | **Context API** | Built-in state management, no external dependencies |
-| **Vite** | Fast development, optimized builds, modern tooling |
 
 ### 4.2 Top-Level Decomposition
 - **Presentation Layer**: React components with responsive design
@@ -128,7 +127,6 @@ graph TB
 - **Styling**: CSS Modules with PostCSS for mobile-first responsive design
 - **State Management**: React Context API with useReducer for complex state
 - **Animation**: Framer Motion for smooth transitions and micro-interactions
-- **Build Tool**: Vite for fast development and optimized production builds
 - **Testing**: Jest and React Testing Library for unit and integration tests
 - **Accessibility**: React ARIA components and semantic HTML
 
@@ -816,7 +814,6 @@ graph TB
     subgraph "Build Process"
         Lint[ESLint]
         Test[Jest Tests]
-        Bundle[Vite Build]
         Optimize[Asset Optimization]
     end
 ```

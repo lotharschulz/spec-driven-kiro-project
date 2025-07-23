@@ -1,117 +1,70 @@
-/**
- * Countdown Timer Component with Visual Warnings
- * Implements requirements: 2.1, 2.2, 2.8
- */
-
 import React, { useEffect, useRef } from 'react';
-import { useQuiz } from '../contexts/QuizContext';
-import styles from './Timer.module.css';
 
-export interface TimerProps {
-  duration?: number; // Duration in seconds, defaults to 30
-  onTimeUp?: () => void; // Callback when timer reaches zero
+interface TimerProps {
+  duration: number; // seconds
+  onTimeUp: () => void;
+  paused: boolean;
+  warningThreshold?: number; // seconds left to trigger warning (default: 10)
+  onTick?: (secondsLeft: number) => void;
 }
 
-export const Timer: React.FC<TimerProps> = ({ 
-  duration = 30, 
-  onTimeUp 
+export const Timer: React.FC<TimerProps> = ({
+  duration,
+  onTimeUp,
+  paused,
+  warningThreshold = 10,
+  onTick,
 }) => {
-  const { state, updateTimer, getTimeWarningLevel } = useQuiz();
-  const intervalRef = useRef<number | null>(null);
+  const [secondsLeft, setSecondsLeft] = React.useState(duration);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Start/stop timer based on pause state
   useEffect(() => {
-    if (!state.isPaused && state.timeRemaining > 0) {
-      intervalRef.current = window.setInterval(() => {
-        updateTimer(state.timeRemaining - 1);
-      }, 1000); // Update every second
-    } else if (intervalRef.current) {
-      window.clearInterval(intervalRef.current);
-      intervalRef.current = null;
+    if (paused) {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      return;
     }
-
+    intervalRef.current = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current!);
+          onTimeUp();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
     return () => {
-      if (intervalRef.current) {
-        window.clearInterval(intervalRef.current);
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [state.isPaused, state.timeRemaining, updateTimer]);
+  }, [paused, onTimeUp]);
 
-  // Call onTimeUp when timer reaches zero
   useEffect(() => {
-    if (state.timeRemaining === 0) {
-      onTimeUp?.();
-      if (intervalRef.current) {
-        window.clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    }
-  }, [state.timeRemaining, onTimeUp]);
+    if (onTick) onTick(secondsLeft);
+  }, [secondsLeft, onTick]);
 
-  const warningLevel = getTimeWarningLevel();
-  const percentage = (state.timeRemaining / duration) * 100;
-  const circumference = 2 * Math.PI * 45; // radius = 45
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+  useEffect(() => {
+    setSecondsLeft(duration);
+  }, [duration]);
 
-  const formatTime = (seconds: number): string => {
-    return seconds.toString().padStart(2, '0');
-  };
+  let color = '#4A7C59'; // default green
+  if (secondsLeft <= warningThreshold && secondsLeft > 0) color = '#EA580C'; // orange
+  if (secondsLeft <= 3 && secondsLeft > 0) color = '#B91C1C'; // red
 
   return (
-    <div className={`${styles.timer} ${styles[warningLevel]}`}>
-      <div className={styles.timerContainer}>
-        <svg className={styles.timerSvg} width="100" height="100">
-          {/* Background circle */}
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            className={styles.timerBackground}
-          />
-          {/* Progress circle */}
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            className={`${styles.timerProgress} ${styles[`progress${warningLevel.charAt(0).toUpperCase() + warningLevel.slice(1)}`]}`}
-            style={{
-              strokeDasharray: circumference,
-              strokeDashoffset: strokeDashoffset,
-              transform: 'rotate(-90deg)',
-              transformOrigin: '50px 50px'
-            }}
-          />
-        </svg>
-        
-        <div className={styles.timerText}>
-          <span className={styles.timeValue}>
-            {formatTime(state.timeRemaining)}
-          </span>
-          <span className={styles.timeLabel}>sec</span>
-        </div>
-      </div>
-      
-      {/* Warning message */}
-      {warningLevel === 'warning' && (
-        <div className={styles.warningMessage}>
-          Hurry up!
-        </div>
-      )}
-      
-      {warningLevel === 'danger' && (
-        <div className={styles.dangerMessage}>
-          Time's almost up!
-        </div>
-      )}
-      
-      {/* Paused indicator */}
-      {state.isPaused && (
-        <div className={styles.pausedIndicator}>
-          ⏸️ Paused
-        </div>
-      )}
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: 24,
+      fontWeight: 'bold',
+      color,
+      minWidth: 60,
+      transition: 'color 0.3s',
+    }}
+      aria-live="polite"
+      aria-label={`Time left: ${secondsLeft} seconds`}
+    >
+      {secondsLeft}s
     </div>
   );
 };
-
-export default Timer;

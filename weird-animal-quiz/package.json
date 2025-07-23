@@ -1,63 +1,42 @@
 {
   "name": "weird-animal-quiz",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "preview": "vite preview",
-    "security:verify": "node scripts/verify-packages.js",
-    "security:audit": "npm audit --audit-level moderate",
-    "security:fix": "npm audit fix",
-    "security:check": "npm run security:verify && npm run security:audit",
-    "security:test": "vitest run --reporter=verbose src/utils/__tests__/security.test.ts",
-    "security:full-audit": "node scripts/security-audit.js",
-    "security:pentest": "node scripts/security-pentest.js",
-    "security:hardening": "npm run security:check && npm run security:full-audit && npm run security:pentest",
-    "perf:test": "vitest run --reporter=verbose src/utils/__tests__/performanceOptimizer.test.ts",
-    "perf:build": "npm run build && npm run perf:analyze",
-    "perf:analyze": "npx vite-bundle-analyzer dist",
-    "perf:lighthouse": "npx lighthouse http://localhost:4173 --output=json --output-path=./lighthouse-report.json --chrome-flags='--headless'",
-    "perf:serve": "npm run build && npm run preview",
-    "prebuild": "npm run security:check && npm run lint && npm run test:run"
+    "start": "webpack serve --mode development --open",
+    "build": "webpack --mode production",
+    "test": "jest"
   },
   "dependencies": {
-    "framer-motion": "^12.23.6",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
-    "@axe-core/react": "^4.10.2",
-    "@eslint/js": "^9.30.1",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "@typescript-eslint/eslint-plugin": "^8.37.0",
-    "@typescript-eslint/parser": "^8.37.0",
-    "@vitejs/plugin-react": "^4.6.0",
-    "axe-core": "^4.10.3",
-    "eslint": "^9.30.1",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.3",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.3.0",
-    "jest-axe": "^10.0.0",
-    "jsdom": "^26.1.0",
-    "prettier": "^3.6.2",
-    "typescript": "~5.8.3",
-    "typescript-eslint": "^8.35.1",
-    "vite": "^7.0.4",
-    "vitest": "^3.2.4"
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@types/jest": "^29.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^30.0.5",
+    "ts-jest": "^29.4.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.0.0",
+    "webpack": "^5.100.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.2"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/jest.setup.js"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "testEnvironment": "jsdom",
+    "moduleNameMapper": {
+      "\\.(css|less|scss|sass)$": "identity-obj-proxy"
+    }
   }
 }

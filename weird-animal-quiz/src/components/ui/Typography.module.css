@@ -1,0 +1,22 @@
+.root {
+  font-family: 'Inter', Arial, sans-serif;
+  color: #2D5016;
+  line-height: 1.5;
+}
+.h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0.5em 0;
+  color: #1E3A8A;
+}
+.h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0.5em 0;
+  color: #4A7C59;
+}
+.p {
+  font-size: 1rem;
+  margin: 0.5em 0;
+  color: #2D5016;
+}
