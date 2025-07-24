@@ -67,8 +67,11 @@ export const ResultsScreen: React.FC<{ onPlayAgain: () => void }> = ({ onPlayAga
 
   // Retry by difficulty handler
   const handleRetryDifficulty = (difficulty: Difficulty) => {
-    // Filter questions by difficulty
-    const filteredQuestions = state.questions.filter(q => q.difficulty === difficulty);
+    // Always use the full demoQuestions set for retry, not just current state
+    // Import demoQuestions from QuizContainer
+    // @ts-ignore
+    const allQuestions = require('./QuizContainer').demoQuestions;
+    const filteredQuestions = allQuestions.filter((q: Question) => q.difficulty === difficulty);
     dispatch({ type: 'RETRY_DIFFICULTY', questions: filteredQuestions });
   };
 
