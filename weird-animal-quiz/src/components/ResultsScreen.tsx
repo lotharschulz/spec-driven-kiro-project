@@ -44,6 +44,20 @@ function calculateResults(state: QuizState): Results {
     percentage: maxScore ? Math.round((score / maxScore) * 100) : 0,
   };
 }
+// Skeleton loader for Suspense fallback
+export const ResultsScreenSkeleton: React.FC = () => (
+  <div className={styles.root} aria-busy="true" aria-label="Loading results...">
+    <div className={styles.title} style={{ opacity: 0.5, background: '#e0e0e0', borderRadius: 8, height: 32, width: 160, margin: '0 auto 16px' }} />
+    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+      <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#e0e0e0', opacity: 0.5 }} />
+    </div>
+    <div style={{ height: 24, width: 220, background: '#e0e0e0', borderRadius: 6, margin: '8px auto' }} />
+    <div style={{ height: 18, width: 180, background: '#e0e0e0', borderRadius: 6, margin: '8px auto' }} />
+    <div style={{ height: 18, width: 180, background: '#e0e0e0', borderRadius: 6, margin: '8px auto' }} />
+    <div style={{ height: 40, width: 120, background: '#e0e0e0', borderRadius: 20, margin: '24px auto' }} />
+    <div style={{ height: 32, width: 200, background: '#e0e0e0', borderRadius: 12, margin: '16px auto' }} />
+  </div>
+);
 
 export const ResultsScreen: React.FC<{ onPlayAgain: () => void }> = ({ onPlayAgain }) => {
   const { state, dispatch } = useQuiz();

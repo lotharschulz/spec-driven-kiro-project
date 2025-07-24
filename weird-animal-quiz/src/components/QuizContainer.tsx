@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Timer } from './Timer';
 import { QuizProvider, useQuiz, Question } from '../state/QuizContext';
 
@@ -23,8 +23,9 @@ const demoQuestions: Question[] = [
 const QUESTION_TIME = 30;
 
 
-import { FeedbackDisplay } from './FeedbackDisplay';
-import { ResultsScreen } from './ResultsScreen';
+import { ResultsScreenSkeleton } from './ResultsScreen';
+const FeedbackDisplay = React.lazy(() => import('./FeedbackDisplay').then(m => ({ default: m.FeedbackDisplay })));
+const ResultsScreen = React.lazy(() => import('./ResultsScreen').then(m => ({ default: m.ResultsScreen })));
 
 const QuizFlow: React.FC = () => {
   const { state, dispatch } = useQuiz();
@@ -85,7 +86,11 @@ const QuizFlow: React.FC = () => {
   const isCorrect = selectedAnswer && correctAnswerObj && selectedAnswer === correctAnswerObj.id;
 
   if (state.isComplete) {
-    return <ResultsScreen onPlayAgain={() => dispatch({ type: 'RESET' })} />;
+    return (
+      <Suspense fallback={<ResultsScreenSkeleton />}>
+        <ResultsScreen onPlayAgain={() => dispatch({ type: 'RESET' })} />
+      </Suspense>
+    );
   }
   return (
     <div>
@@ -131,22 +136,28 @@ const QuizFlow: React.FC = () => {
             </div>
           </>
         ) : (
-          <FeedbackDisplay
-            key={feedbackKey}
-            isCorrect={!!isCorrect}
-            correctAnswer={correctAnswerText}
-            explanation={currentQ.explanation}
-            onNext={handleNext}
-            minReadTime={3}
-          />
+          <Suspense fallback={<div style={{ textAlign: 'center', padding: 32, color: '#4A7C59', fontSize: 18 }}>Loading feedback…</div>}>
+            <FeedbackDisplay
+              key={feedbackKey}
+              isCorrect={!!isCorrect}
+              correctAnswer={correctAnswerText}
+              explanation={currentQ.explanation}
+              onNext={handleNext}
+              minReadTime={3}
+            />
+          </Suspense>
         )}
       </div>
     </div>
   );
 };
 
-export const QuizContainer: React.FC = () => (
-  <QuizProvider>
-    <QuizFlow />
-  </QuizProvider>
-);
+
+
+export const QuizContainer: React.FC = () => {
+  return (
+    <QuizProvider>
+      <QuizFlow />
+    </QuizProvider>
+  );
+};
