@@ -345,10 +345,16 @@ const QuizFlow: React.FC = () => {
         {!showFeedback ? (
           <>
             <div style={{ fontSize: 20, fontWeight: 'bold' }}>{currentQ.text}</div>
-            <div style={{ margin: '16px 0' }}>
-              {currentQ.answers.map((a) => (
+            <div style={{ margin: '16px 0' }} role="radiogroup" aria-label="Answer choices">
+              {currentQ.answers.map((a, idx) => (
                 <button
                   key={a.id}
+                  ref={el => {
+                    // Focus first button on mount for keyboard navigation
+                    if (el && idx === 0 && !selectedAnswer && !showFeedback) {
+                      el.focus();
+                    }
+                  }}
                   style={{
                     display: 'block',
                     width: '100%',
@@ -363,6 +369,20 @@ const QuizFlow: React.FC = () => {
                     transition: 'background 0.3s, color 0.3s',
                   }}
                   onClick={() => handleAnswer(a.id, QUESTION_TIME - timeTaken)}
+                  onKeyDown={e => {
+                    if (!userAnswered && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+                      e.preventDefault();
+                      const btns = Array.from(document.querySelectorAll('[role="radio"]'));
+                      const currentIdx = btns.findIndex(b => b === e.currentTarget);
+                      let nextIdx = currentIdx + (e.key === 'ArrowDown' ? 1 : -1);
+                      if (nextIdx < 0) nextIdx = btns.length - 1;
+                      if (nextIdx >= btns.length) nextIdx = 0;
+                      (btns[nextIdx] as HTMLElement).focus();
+                    }
+                  }}
+                  role="radio"
+                  aria-checked={selectedAnswer === a.id}
+                  tabIndex={selectedAnswer === null ? 0 : selectedAnswer === a.id ? 0 : -1}
                   disabled={userAnswered}
                   aria-pressed={selectedAnswer === a.id}
                 >
