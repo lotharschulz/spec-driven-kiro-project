@@ -46,9 +46,16 @@ function calculateResults(state: QuizState): Results {
 }
 
 export const ResultsScreen: React.FC<{ onPlayAgain: () => void }> = ({ onPlayAgain }) => {
-  const { state } = useQuiz();
+  const { state, dispatch } = useQuiz();
   const results = calculateResults(state);
   const highScore = results.percentage >= 80;
+
+  // Retry by difficulty handler
+  const handleRetryDifficulty = (difficulty: Difficulty) => {
+    // Filter questions by difficulty
+    const filteredQuestions = state.questions.filter(q => q.difficulty === difficulty);
+    dispatch({ type: 'RETRY_DIFFICULTY', questions: filteredQuestions });
+  };
 
   return (
     <div className={styles.root}>
@@ -66,7 +73,12 @@ export const ResultsScreen: React.FC<{ onPlayAgain: () => void }> = ({ onPlayAga
         Easy: {results.breakdown.easy} | Medium: {results.breakdown.medium} | Hard: {results.breakdown.hard}
       </div>
       <Button className={styles.playAgainBtn} onClick={onPlayAgain}>Play Again</Button>
-      {/* TODO: Add retry by difficulty options */}
+      <div style={{ marginTop: '1em', textAlign: 'center' }}>
+        <strong>Retry by Difficulty:</strong><br />
+        <Button className={styles.playAgainBtn} onClick={() => handleRetryDifficulty('easy')}>Easy</Button>{' '}
+        <Button className={styles.playAgainBtn} onClick={() => handleRetryDifficulty('medium')}>Medium</Button>{' '}
+        <Button className={styles.playAgainBtn} onClick={() => handleRetryDifficulty('hard')}>Hard</Button>
+      </div>
     </div>
   );
 };

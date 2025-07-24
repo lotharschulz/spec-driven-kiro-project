@@ -34,7 +34,8 @@ export type QuizAction =
   | { type: 'PAUSE' }
   | { type: 'RESUME' }
   | { type: 'RESET' }
-  | { type: 'SET_QUESTIONS'; questions: Question[] };
+  | { type: 'SET_QUESTIONS'; questions: Question[] }
+  | { type: 'RETRY_DIFFICULTY'; questions: Question[] };
 
 const initialState: QuizState = {
   currentQuestionIndex: 0,
@@ -45,9 +46,11 @@ const initialState: QuizState = {
 };
 
 function quizReducer(state: QuizState, action: QuizAction): QuizState {
+  // ...existing code...
   switch (action.type) {
-    case 'SET_QUESTIONS':
+    case 'SET_QUESTIONS': {
       return { ...initialState, questions: action.questions };
+    }
     case 'ANSWER_QUESTION': {
       const currentQ = state.questions[state.currentQuestionIndex];
       const updatedAnswers = [
@@ -74,14 +77,21 @@ function quizReducer(state: QuizState, action: QuizAction): QuizState {
       }
       return { ...state, currentQuestionIndex: nextIndex, paused: false };
     }
-    case 'PAUSE':
+    case 'PAUSE': {
       return { ...state, paused: true };
-    case 'RESUME':
+    }
+    case 'RESUME': {
       return { ...state, paused: false };
-    case 'RESET':
+    }
+    case 'RESET': {
       return { ...initialState, questions: state.questions };
-    default:
+    }
+    case 'RETRY_DIFFICULTY': {
+      return { ...initialState, questions: action.questions };
+    }
+    default: {
       return state;
+    }
   }
 }
 
