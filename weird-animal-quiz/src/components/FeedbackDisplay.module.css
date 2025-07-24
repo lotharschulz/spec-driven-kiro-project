@@ -1,0 +1,62 @@
+/* FeedbackDisplay.module.css */
+.feedback {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 2px 16px rgba(74, 124, 89, 0.08);
+  padding: 24px 16px 16px 16px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.correct {
+  color: #4A7C59;
+  font-weight: 700;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+.incorrect {
+  color: #EA580C;
+  font-weight: 700;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+.icon {
+  font-size: 2rem;
+  margin-right: 0.5em;
+}
+.status {
+  font-size: 1.2rem;
+}
+.correctAnswer {
+  color: #3B82F6;
+  font-size: 1.1rem;
+  margin-bottom: 0.5em;
+}
+.explanation {
+  color: #2D5016;
+  font-size: 1.05rem;
+  margin-bottom: 0.5em;
+  text-align: center;
+}
+.funFact {
+  color: #FB923C;
+  font-size: 1rem;
+  margin-bottom: 1em;
+  text-align: center;
+}
+.nextBtn {
+  margin-top: 1em;
+  min-width: 120px;
+  min-height: 44px;
+  font-size: 1rem;
+}
