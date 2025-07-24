@@ -2,6 +2,15 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from './ui/Button';
 import styles from './FeedbackDisplay.module.css';
+// Diagnostic: Log the imported styles object and throw if undefined
+if (typeof styles === 'undefined') {
+  // eslint-disable-next-line no-console
+  console.error('FeedbackDisplay.module.css import is undefined!');
+  throw new Error('FeedbackDisplay.module.css import is undefined. CSS Modules loader may be misconfigured or failing.');
+} else {
+  // eslint-disable-next-line no-console
+  console.log('FeedbackDisplay.module.css styles object:', styles);
+}
 
 interface FeedbackDisplayProps {
   isCorrect: boolean;

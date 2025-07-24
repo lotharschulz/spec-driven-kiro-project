@@ -28,7 +28,7 @@ export interface QuizState {
 }
 
 export type QuizAction =
-  | { type: 'ANSWER_QUESTION'; answerId: string; timeTaken: number }
+  | { type: 'ANSWER_QUESTION'; answerId: string | null; timeTaken: number }
   | { type: 'USE_HINT' }
   | { type: 'NEXT_QUESTION' }
   | { type: 'PAUSE' }

@@ -24,6 +24,7 @@ const QUESTION_TIME = 30;
 
 
 import { FeedbackDisplay } from './FeedbackDisplay';
+import { ResultsScreen } from './ResultsScreen';
 
 const QuizFlow: React.FC = () => {
   const { state, dispatch } = useQuiz();
@@ -83,6 +84,9 @@ const QuizFlow: React.FC = () => {
   const correctAnswerText = correctAnswerObj ? correctAnswerObj.text : '';
   const isCorrect = selectedAnswer && correctAnswerObj && selectedAnswer === correctAnswerObj.id;
 
+  if (state.isComplete) {
+    return <ResultsScreen onPlayAgain={() => dispatch({ type: 'RESET' })} />;
+  }
   return (
     <div>
       <div style={{ marginBottom: 16 }}>
@@ -136,7 +140,6 @@ const QuizFlow: React.FC = () => {
             minReadTime={3}
           />
         )}
-        {state.isComplete && <div>Quiz Complete!</div>}
       </div>
     </div>
   );

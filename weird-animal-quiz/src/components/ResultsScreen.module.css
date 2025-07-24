@@ -1,0 +1,45 @@
+/* ResultsScreen.module.css */
+.root {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 2px 16px rgba(74, 124, 89, 0.08);
+  padding: 32px 16px 24px 16px;
+  margin: 32px auto;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2D5016;
+  margin-bottom: 0.5em;
+  text-align: center;
+}
+.celebrate {
+  font-size: 3rem;
+  color: #4A7C59;
+  margin-bottom: 1em;
+}
+.score {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
+.stats {
+  font-size: 1rem;
+  margin-bottom: 1em;
+  color: #4A7C59;
+}
+.breakdown {
+  font-size: 1rem;
+  margin-bottom: 1em;
+  color: #3B82F6;
+}
+.playAgainBtn {
+  margin-top: 1em;
+  min-width: 120px;
+  min-height: 44px;
+  font-size: 1rem;
+}
