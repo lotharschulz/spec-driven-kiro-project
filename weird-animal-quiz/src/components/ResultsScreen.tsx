@@ -59,6 +59,7 @@ export const ResultsScreenSkeleton: React.FC = () => (
   </div>
 );
 
+
 export const ResultsScreen: React.FC<{ onPlayAgain: () => void }> = ({ onPlayAgain }) => {
   const { state, dispatch } = useQuiz();
   const results = calculateResults(state);
@@ -72,10 +73,10 @@ export const ResultsScreen: React.FC<{ onPlayAgain: () => void }> = ({ onPlayAga
   };
 
   return (
-    <div className={styles.root}>
-      <div className={styles.title}>Quiz Results</div>
-      {highScore && <div className={styles.celebrate}>🎉</div>}
-      <div className={styles.score}>
+    <section className={styles.root} role="region" aria-labelledby="results-title">
+      <h2 id="results-title" className={styles.title}>Quiz Results</h2>
+      {highScore && <div className={styles.celebrate} aria-label="High score celebration" role="img">🎉</div>}
+      <div className={styles.score} aria-live="polite">
         <strong>Score:</strong> {results.score} / {results.maxScore} ({results.percentage}%)
       </div>
       <div className={styles.stats}>
@@ -84,15 +85,17 @@ export const ResultsScreen: React.FC<{ onPlayAgain: () => void }> = ({ onPlayAga
       </div>
       <div className={styles.breakdown}>
         <strong>Breakdown:</strong><br />
-        Easy: {results.breakdown.easy} | Medium: {results.breakdown.medium} | Hard: {results.breakdown.hard}
+        <span aria-label="Easy score">Easy: {results.breakdown.easy}</span> |{' '}
+        <span aria-label="Medium score">Medium: {results.breakdown.medium}</span> |{' '}
+        <span aria-label="Hard score">Hard: {results.breakdown.hard}</span>
       </div>
-      <Button className={styles.playAgainBtn} onClick={onPlayAgain}>Play Again</Button>
-      <div style={{ marginTop: '1em', textAlign: 'center' }}>
+      <Button className={styles.playAgainBtn} onClick={onPlayAgain} aria-label="Play the quiz again">Play Again</Button>
+      <nav style={{ marginTop: '1em', textAlign: 'center' }} aria-label="Retry quiz by difficulty">
         <strong>Retry by Difficulty:</strong><br />
-        <Button className={styles.playAgainBtn} onClick={() => handleRetryDifficulty('easy')}>Easy</Button>{' '}
-        <Button className={styles.playAgainBtn} onClick={() => handleRetryDifficulty('medium')}>Medium</Button>{' '}
-        <Button className={styles.playAgainBtn} onClick={() => handleRetryDifficulty('hard')}>Hard</Button>
-      </div>
-    </div>
+        <Button className={styles.playAgainBtn} onClick={() => handleRetryDifficulty('easy')} aria-label="Retry easy questions">Easy</Button>{' '}
+        <Button className={styles.playAgainBtn} onClick={() => handleRetryDifficulty('medium')} aria-label="Retry medium questions">Medium</Button>{' '}
+        <Button className={styles.playAgainBtn} onClick={() => handleRetryDifficulty('hard')} aria-label="Retry hard questions">Hard</Button>
+      </nav>
+    </section>
   );
 };
