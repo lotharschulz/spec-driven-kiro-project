@@ -259,6 +259,7 @@ const QuizFlow: React.FC = () => {
   const [timeTaken, setTimeTaken] = React.useState(0);
   const [category, setCategory] = React.useState<'easy' | 'medium' | 'hard' | null>(null);
   const [started, setStarted] = React.useState(false);
+  const [highContrast, setHighContrast] = React.useState(false);
 
   React.useEffect(() => {
     if (state.questions.length === 0 && category) {
@@ -281,9 +282,18 @@ const QuizFlow: React.FC = () => {
         <h2>Welcome to the Weird Animal Quiz!</h2>
         <p>Choose a difficulty category to begin:</p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
-          <button style={{ padding: '16px 32px', fontSize: 18, borderRadius: 12, background: '#4A7C59', color: '#fff', border: 'none', cursor: 'pointer' }} onClick={() => { setCategory('easy'); setStarted(true); dispatch({ type: 'SET_QUESTIONS', questions: demoQuestions.filter(q => q.difficulty === 'easy') }); }}>Easy</button>
-          <button style={{ padding: '16px 32px', fontSize: 18, borderRadius: 12, background: '#EA580C', color: '#fff', border: 'none', cursor: 'pointer' }} onClick={() => { setCategory('medium'); setStarted(true); dispatch({ type: 'SET_QUESTIONS', questions: demoQuestions.filter(q => q.difficulty === 'medium') }); }}>Medium</button>
-          <button style={{ padding: '16px 32px', fontSize: 18, borderRadius: 12, background: '#2D5016', color: '#fff', border: 'none', cursor: 'pointer' }} onClick={() => { setCategory('hard'); setStarted(true); dispatch({ type: 'SET_QUESTIONS', questions: demoQuestions.filter(q => q.difficulty === 'hard') }); }}>Hard</button>
+          <button style={{ padding: '16px 32px', fontSize: 18, borderRadius: 12, background: highContrast ? '#000' : '#4A7C59', color: highContrast ? '#FFD700' : '#fff', border: 'none', cursor: 'pointer' }} onClick={() => { setCategory('easy'); setStarted(true); dispatch({ type: 'SET_QUESTIONS', questions: demoQuestions.filter(q => q.difficulty === 'easy') }); }}>Easy</button>
+          <button style={{ padding: '16px 32px', fontSize: 18, borderRadius: 12, background: highContrast ? '#000' : '#EA580C', color: highContrast ? '#FFD700' : '#fff', border: 'none', cursor: 'pointer' }} onClick={() => { setCategory('medium'); setStarted(true); dispatch({ type: 'SET_QUESTIONS', questions: demoQuestions.filter(q => q.difficulty === 'medium') }); }}>Medium</button>
+          <button style={{ padding: '16px 32px', fontSize: 18, borderRadius: 12, background: highContrast ? '#000' : '#2D5016', color: highContrast ? '#FFD700' : '#fff', border: 'none', cursor: 'pointer' }} onClick={() => { setCategory('hard'); setStarted(true); dispatch({ type: 'SET_QUESTIONS', questions: demoQuestions.filter(q => q.difficulty === 'hard') }); }}>Hard</button>
+        </div>
+        <div style={{ marginTop: 32 }}>
+          <button
+            style={{ padding: '8px 24px', fontSize: 16, borderRadius: 8, background: highContrast ? '#FFD700' : '#eee', color: highContrast ? '#000' : '#333', border: '2px solid #4A7C59', cursor: 'pointer' }}
+            onClick={() => setHighContrast(hc => !hc)}
+            aria-pressed={highContrast}
+          >
+            {highContrast ? 'Disable High Contrast' : 'Enable High Contrast'}
+          </button>
         </div>
       </div>
     );
@@ -362,11 +372,12 @@ const QuizFlow: React.FC = () => {
                     padding: '16px',
                     fontSize: 18,
                     borderRadius: 12,
-                    border: '2px solid #4A7C59',
-                    background: selectedAnswer === a.id ? (a.isCorrect ? '#4A7C59' : '#EA580C') : '#fff',
-                    color: selectedAnswer === a.id ? '#fff' : '#2D5016',
+                    border: highContrast ? '3px solid #FFD700' : '2px solid #4A7C59',
+                    background: selectedAnswer === a.id ? (a.isCorrect ? (highContrast ? '#000' : '#4A7C59') : (highContrast ? '#FFD700' : '#EA580C')) : (highContrast ? '#222' : '#fff'),
+                    color: selectedAnswer === a.id ? (highContrast ? '#FFD700' : '#fff') : (highContrast ? '#FFD700' : '#2D5016'),
                     cursor: 'pointer',
-                    transition: 'background 0.3s, color 0.3s',
+                    transition: 'background 0.3s, color 0.3s, border 0.3s',
+                    outline: 'none',
                   }}
                   onClick={() => handleAnswer(a.id, QUESTION_TIME - timeTaken)}
                   onKeyDown={e => {
@@ -385,6 +396,12 @@ const QuizFlow: React.FC = () => {
                   tabIndex={selectedAnswer === null ? 0 : selectedAnswer === a.id ? 0 : -1}
                   disabled={userAnswered}
                   aria-pressed={selectedAnswer === a.id}
+                  onFocus={e => {
+                    e.currentTarget.style.boxShadow = highContrast ? '0 0 0 4px #FFD700' : '0 0 0 4px #4A7C59';
+                  }}
+                  onBlur={e => {
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                 >
                   {a.text}
                 </button>
