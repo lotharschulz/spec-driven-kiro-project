@@ -4,6 +4,7 @@ import { useQuiz } from '../state/QuizContext';
 import styles from './ResultsScreen.module.css';
 
 import { QuizState, Difficulty, UserAnswer, Question } from '../state/QuizContext';
+import { demoQuestions } from './QuizContainer';
 
 interface Results {
   score: number;
@@ -67,11 +68,7 @@ export const ResultsScreen: React.FC<{ onPlayAgain: () => void }> = ({ onPlayAga
 
   // Retry by difficulty handler
   const handleRetryDifficulty = (difficulty: Difficulty) => {
-    // Always use the full demoQuestions set for retry, not just current state
-    // Import demoQuestions from QuizContainer
-    // @ts-ignore
-    const allQuestions = require('./QuizContainer').demoQuestions;
-    const filteredQuestions = allQuestions.filter((q: Question) => q.difficulty === difficulty);
+    const filteredQuestions = demoQuestions.filter((q: Question) => q.difficulty === difficulty);
     dispatch({ type: 'RETRY_DIFFICULTY', questions: filteredQuestions });
   };
 

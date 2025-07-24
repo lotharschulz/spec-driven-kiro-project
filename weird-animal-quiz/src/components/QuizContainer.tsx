@@ -2,18 +2,33 @@ import React, { Suspense } from 'react';
 import { Timer } from './Timer';
 import { QuizProvider, useQuiz, Question } from '../state/QuizContext';
 
+type Answer = {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+};
+
 // Dummy questions for demonstration (replace with real data)
-const demoQuestions: Question[] = [
+function shuffleAnswers(answers: Answer[]): Answer[] {
+  const arr = [...answers];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+export const demoQuestions: Question[] = [
   // Easy questions
   {
     id: 'q1',
     text: 'Which animal can sleep for up to three years at a time? 🐌🌧️',
-    answers: [
+    answers: shuffleAnswers([
       { id: 'a1', text: 'Snail', isCorrect: true },
       { id: 'a2', text: 'Bat', isCorrect: false },
       { id: 'a3', text: 'Frog', isCorrect: false },
       { id: 'a4', text: 'Sloth', isCorrect: false },
-    ],
+    ]),
     difficulty: 'easy',
     emojis: ['🐌', '🌧️'],
     explanation: 'Some snails can hibernate for up to three years in extreme conditions!',
@@ -252,7 +267,17 @@ const ResultsScreen = React.lazy(() => import('./ResultsScreen').then(m => ({ de
 
 const QuizFlow: React.FC = () => {
   const { state, dispatch } = useQuiz();
-  const currentQ = state.questions[state.currentQuestionIndex];
+  // Shuffle answers for the current question on each render
+  function shuffleAnswers(answers: { id: string; text: string; isCorrect: boolean }[]): { id: string; text: string; isCorrect: boolean }[] {
+    const arr = [...answers];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  const currentQRaw = state.questions[state.currentQuestionIndex];
+  const currentQ = currentQRaw ? { ...currentQRaw, answers: shuffleAnswers(currentQRaw.answers) } : null;
   const [selectedAnswer, setSelectedAnswer] = React.useState<string | null>(null);
   const [showFeedback, setShowFeedback] = React.useState(false);
   const [feedbackKey, setFeedbackKey] = React.useState(0); // for remounting FeedbackDisplay

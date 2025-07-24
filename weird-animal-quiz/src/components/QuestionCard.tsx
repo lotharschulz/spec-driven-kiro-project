@@ -40,17 +40,26 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   progress,
   difficulty,
 }) => {
+  // Shuffle answers on first render
+  const [shuffledAnswers] = React.useState(() => {
+    const arr = [...question.answers];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  });
   return (
     <div className={styles.card}>
       <div className={styles.emojis} aria-hidden="true">{question.emojis.join(' ')}</div>
       <div className={`${styles.difficulty} ${styles[`difficulty-${difficulty}`]}`}>{difficulty.toUpperCase()}</div>
       <div className={styles.question}>{question.text}</div>
       <div className={styles.answers}>
-        {question.answers.map((a) => {
+        {shuffledAnswers.map((a) => {
           let btnClass = styles.answerBtn;
           if (showFeedback) {
-            if (a.id === correctAnswerId) btnClass += ' ' + styles.correct;
-            else if (a.id === selectedAnswerId) btnClass += ' ' + styles.incorrect;
+            // Only indicate incorrect selection, not correct
+            if (a.id === selectedAnswerId && a.id !== correctAnswerId) btnClass += ' ' + styles.incorrect;
           } else if (selectedAnswerId === a.id) {
             btnClass += ' ' + styles.selected;
           }
